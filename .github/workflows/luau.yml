@@ -1,0 +1,25 @@
+# Reusable workflow that analyzes the repository!
+name: luau
+on:
+  workflow_call
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Setup Aftman
+        uses: ok-nick/setup-aftman@v0.4.2
+        with:
+          version: 'v0.3.0'
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Link all packages
+        run: npm run build:link
+
+      - name: Generate Sourcemap
+        run: npm run build:sourcemap
+
+      - name: Luau-lsp analyze
+        run: luau-lsp analyze src

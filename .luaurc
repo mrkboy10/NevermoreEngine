@@ -1,7 +1,7 @@
 {
-	"languageMode": "strict",
-	"lint": { "*": true },
-	"lintErrors": true,
-	"typeErrors": true,
-	"globals": []
+  "languageMode": "strict",
+  "lintErrors": true,
+  "lint": {
+    "*": true
+  }
 }

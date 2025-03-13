@@ -6,3 +6,6 @@ jobs:
   lint:
     if: "github.event.pull_request.head.repo.fork"
     uses: ./.github/workflows/lint.yml
+  luau:
+    if: "github.event.pull_request.head.repo.fork"
+    uses: ./.github/workflows/luau.yml
