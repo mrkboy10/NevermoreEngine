@@ -1,3 +1,4 @@
+--!strict
 --[=[
 	Tuple class for Lua
 
@@ -8,13 +9,21 @@ local Tuple = {}
 Tuple.ClassName = "Tuple"
 Tuple.__index = Tuple
 
+export type Tuple<T> = typeof(setmetatable(
+	{} :: {
+		n: number,
+		[number]: T?,
+	},
+	Tuple
+))
+
 --[=[
 	Constructs a new tuple
 
 	@param ... any
 	@return Tuple<T>
 ]=]
-function Tuple.new(...)
+function Tuple.new<T>(...: T): Tuple<T>
 	return setmetatable(table.pack(...), Tuple)
 end
 
@@ -24,7 +33,7 @@ end
 	@param value any
 	@return boolean
 ]=]
-function Tuple.isTuple(value)
+function Tuple.isTuple(value): boolean
 	return getmetatable(value) == Tuple
 end
 
@@ -33,7 +42,7 @@ end
 
 	@return T
 ]=]
-function Tuple:Unpack()
+function Tuple:Unpack<T>(): ...T
 	return table.unpack(self, 1, self.n)
 end
 
@@ -42,16 +51,16 @@ end
 
 	@return { T }
 ]=]
-function Tuple:ToArray()
+function Tuple:ToArray<T>(): { T }
 	return { self:Unpack() }
 end
 
 --[=[
 	Converts the tuple to a string for easy debugging
 ]=]
-function Tuple:__tostring()
+function Tuple:__tostring(): string
 	local converted = {}
-	for i=1, self.n do
+	for i = 1, self.n do
 		converted[i] = tostring(self[i])
 	end
 	return table.concat(converted, ", ")
@@ -62,7 +71,7 @@ end
 
 	@return number
 ]=]
-function Tuple:__len()
+function Tuple:__len(): number
 	return self.n
 end
 
@@ -70,7 +79,7 @@ end
 	Compares the tuple to another tuple
 	@param other Tuple
 ]=]
-function Tuple:__eq(other)
+function Tuple.__eq<T>(self: Tuple<T>, other: Tuple<T>): boolean
 	if not Tuple.isTuple(other) then
 		return false
 	end
@@ -79,7 +88,7 @@ function Tuple:__eq(other)
 		return false
 	end
 
-	for i=1, self.n do
+	for i = 1, self.n do
 		if self[i] ~= other[i] then
 			return false
 		end
@@ -92,12 +101,12 @@ end
 	Combines the tuple
 	@param other Tuple
 ]=]
-function Tuple:__add(other)
+function Tuple.__add<T>(self: Tuple<T>, other: Tuple<T>): Tuple<T>
 	assert(Tuple.isTuple(other), "Can only add tuples")
 
 	local result = Tuple.new(self:Unpack())
 	local count = self.n
-	for i=1, other.n do
+	for i = 1, other.n do
 		result[count + i] = other[i]
 	end
 	result.n = count + other.n
@@ -109,7 +118,7 @@ end
 
 	@return ...
 ]=]
-function Tuple:__call()
+function Tuple:__call<T>(): ...T
 	return table.unpack(self, 1, self.n)
 end
 

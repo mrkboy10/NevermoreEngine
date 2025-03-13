@@ -1,3 +1,4 @@
+--!strict
 --[=[
 	Helps plays back sounds in the Roblox engine.
 
@@ -16,6 +17,10 @@ local RunService = game:GetService("RunService")
 local SoundPromiseUtils = require("SoundPromiseUtils")
 local RbxAssetUtils = require("RbxAssetUtils")
 
+export type SoundOptions = {
+	SoundId: number | string,
+}
+
 local SoundUtils = {}
 
 --[=[
@@ -31,7 +36,7 @@ local SoundUtils = {}
 
 	@return Sound
 ]=]
-function SoundUtils.playFromId(id: string | number | table): Sound
+function SoundUtils.playFromId(id: string | number | SoundOptions): Sound
 	local sound = SoundUtils.createSoundFromId(id)
 
 	if RunService:IsClient() then
@@ -48,7 +53,7 @@ end
 --[=[
 	Creates a new sound object from the given id
 ]=]
-function SoundUtils.createSoundFromId(id: string | number | table): Sound
+function SoundUtils.createSoundFromId(id: string | number | SoundOptions): Sound
 	local soundId = SoundUtils.toRbxAssetId(id)
 	assert(type(soundId) == "string", "Bad id")
 
@@ -60,7 +65,7 @@ function SoundUtils.createSoundFromId(id: string | number | table): Sound
 	return sound
 end
 
-function SoundUtils.applyPropertiesFromId(sound, id)
+function SoundUtils.applyPropertiesFromId(sound: Sound, id: string | number | SoundOptions)
 	local soundId = SoundUtils.toRbxAssetId(id)
 	sound.Name = string.format("Sound_%s", soundId)
 	sound.SoundId = soundId
@@ -87,7 +92,7 @@ end
 --[=[
 	Plays back a template given asset id in the parent
 ]=]
-function SoundUtils.playFromIdInParent(id: string | number | table, parent: Instance): Sound
+function SoundUtils.playFromIdInParent(id: string | number | SoundOptions, parent: Instance): Sound
 	assert(typeof(parent) == "Instance", "Bad parent")
 
 	local sound = SoundUtils.createSoundFromId(id)
@@ -149,7 +154,7 @@ end
 	@return string?
 	@within SoundUtils
 ]=]
-function SoundUtils.toRbxAssetId(soundId)
+function SoundUtils.toRbxAssetId(soundId: string | number | SoundOptions)
 	if type(soundId) == "table" then
 		return RbxAssetUtils.toRbxAssetId(soundId.SoundId)
 	else
@@ -157,7 +162,7 @@ function SoundUtils.toRbxAssetId(soundId)
 	end
 end
 
-function SoundUtils.isConvertableToRbxAsset(soundId)
+function SoundUtils.isConvertableToRbxAsset(soundId: string | number | SoundOptions): boolean
 	if type(soundId) == "table" then
 		return RbxAssetUtils.isConvertableToRbxAsset(soundId.SoundId)
 	else

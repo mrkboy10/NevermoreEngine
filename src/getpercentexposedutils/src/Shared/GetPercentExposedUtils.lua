@@ -27,7 +27,7 @@ GetPercentExposedUtils.RAY_COUNT = 314
 	@param raycaster Raycaster?
 	@return { [BasePart]: number } -- A table mapping parts to to percent exposure
 ]=]
-function GetPercentExposedUtils.search(point, radius, raycaster)
+function GetPercentExposedUtils.search(point: Vector3, radius: number, raycaster): { [BasePart]: number }
 	local hits = {}
 	local totalHits = 0
 

@@ -66,7 +66,7 @@ Binder.ClassName = "Binder"
 	@param ... any -- Variable arguments that will be passed into the constructor
 	@return Binder<T>
 ]=]
-function Binder.new(tagName, constructor, ...)
+function Binder.new(tagName: string, constructor: any, ...)
 	assert(type(tagName) == "string", "Bad tagName")
 
 	local self = setmetatable({}, Binder)
@@ -134,7 +134,7 @@ function Binder:Init(...)
 
 	if select("#", ...) > 0 then
 		if not self._args then
-			self._args = {...}
+			self._args = { ... }
 		elseif not self:_argsMatch(...) then
 			warn("[Binder.Init] - Non-matching args from :Init() and .new()")
 		end
@@ -153,7 +153,7 @@ function Binder:_argsMatch(...)
 		return false
 	end
 
-	for index, value in pairs({...}) do
+	for index, value in pairs({ ... }) do
 		if self._args[index] ~= value then
 			return false
 		end
@@ -192,7 +192,7 @@ end
 	Returns the tag name that the binder has.
 	@return string
 ]=]
-function Binder:GetTag()
+function Binder:GetTag(): string
 	return self._tagName
 end
 
@@ -212,7 +212,7 @@ end
 	@param instance Instance
 	@return Observable<T | nil>
 ]=]
-function Binder:Observe(instance)
+function Binder:Observe(instance: Instance)
 	assert(typeof(instance) == "Instance", "Bad instance")
 
 	return Observable.new(function(sub)
@@ -269,7 +269,7 @@ end
 	@param instance Instance
 	@return Observable<Brio<T>>
 ]=]
-function Binder:ObserveBrio(instance)
+function Binder:ObserveBrio(instance: Instance)
 	assert(typeof(instance) == "Instance", "Bad instance")
 
 	return Observable.new(function(sub)
@@ -305,7 +305,7 @@ end
 	@param callback function
 	@return function -- Cleanup function
 ]=]
-function Binder:ObserveInstance(inst, callback)
+function Binder:ObserveInstance(inst: Instance, callback)
 	assert(typeof(inst) == "Instance", "Bad inst")
 	assert(type(callback) == "function", "Bad callback")
 
@@ -401,11 +401,10 @@ end
 function Binder:GetAll()
 	local all = {}
 	for class, _ in pairs(self._allClassSet) do
-		all[#all+1] = class
+		all[#all + 1] = class
 	end
 	return all
 end
-
 
 --[=[
 	Faster method to get all items in a binder
@@ -446,9 +445,15 @@ end
 	@param inst Instance -- Instance to check
 	@return T? -- Bound class
 ]=]
-function Binder:Bind(inst)
+function Binder:Bind(inst: Instance)
 	if RunService:IsClient() then
-		warn(string.format("[Binder.Bind] - Bindings '%s' done on the client! Will be disrupted upon server replication! %s", self._tagName, debug.traceback()))
+		warn(
+			string.format(
+				"[Binder.Bind] - Bindings '%s' done on the client! Will be disrupted upon server replication! %s",
+				self._tagName,
+				debug.traceback()
+			)
+		)
 	end
 
 	CollectionService:AddTag(inst, self._tagName)
@@ -460,7 +465,7 @@ end
 
 	@param inst Instance
 ]=]
-function Binder:Tag(inst)
+function Binder:Tag(inst: Instance)
 	assert(typeof(inst) == "Instance", "Bad inst")
 
 	CollectionService:AddTag(inst, self._tagName)
@@ -471,7 +476,7 @@ end
 
 	@param inst Instance
 ]=]
-function Binder:HasTag(inst)
+function Binder:HasTag(inst: Instance): boolean
 	assert(typeof(inst) == "Instance", "Bad inst")
 
 	return CollectionService:HasTag(inst, self._tagName)
@@ -482,7 +487,7 @@ end
 
 	@param inst Instance
 ]=]
-function Binder:Untag(inst)
+function Binder:Untag(inst: Instance)
 	assert(typeof(inst) == "Instance", "Bad inst")
 
 	CollectionService:RemoveTag(inst, self._tagName)
@@ -494,11 +499,17 @@ end
 	@server
 	@param inst Instance -- Instance to unbind
 ]=]
-function Binder:Unbind(inst)
+function Binder:Unbind(inst: Instance)
 	assert(typeof(inst) == "Instance", "Bad inst'")
 
 	if RunService:IsClient() then
-		warn(string.format("[Binder.Bind] - Unbinding '%s' done on the client! Might be disrupted upon server replication! %s", self._tagName, debug.traceback()))
+		warn(
+			string.format(
+				"[Binder.Bind] - Unbinding '%s' done on the client! Might be disrupted upon server replication! %s",
+				self._tagName,
+				debug.traceback()
+			)
+		)
 	end
 
 	CollectionService:RemoveTag(inst, self._tagName)
@@ -514,9 +525,11 @@ end
  @param inst Instance -- Instance to bind
  @return T? -- Bound class (potentially)
 ]=]
-function Binder:BindClient(inst)
+function Binder:BindClient(inst: Instance)
 	if not RunService:IsClient() then
-		warn(string.format("[Binder.BindClient] - Bindings '%s' done on the server! Will be replicated!", self._tagName))
+		warn(
+			string.format("[Binder.BindClient] - Bindings '%s' done on the server! Will be replicated!", self._tagName)
+		)
 	end
 
 	CollectionService:AddTag(inst, self._tagName)
@@ -529,7 +542,7 @@ end
 	@client
 	@param inst Instance -- Instance to unbind
 ]=]
-function Binder:UnbindClient(inst)
+function Binder:UnbindClient(inst: Instance)
 	assert(typeof(inst) == "Instance", "Bad inst")
 	CollectionService:RemoveTag(inst, self._tagName)
 end
@@ -540,7 +553,7 @@ end
 	@param inst Instance -- Instance to check
 	@return T?
 ]=]
-function Binder:Get(inst)
+function Binder:Get(inst: Instance)
 	assert(typeof(inst) == "Instance", "Argument 'inst' is not an Instance")
 	return self._instToClass[inst]
 end
@@ -552,7 +565,7 @@ end
 	@param cancelToken? CancelToken
 	@return Promise<T>
 ]=]
-function Binder:Promise(inst, cancelToken)
+function Binder:Promise(inst: Instance, cancelToken)
 	assert(typeof(inst) == "Instance", "Argument 'inst' is not an Instance")
 	return promiseBoundClass(self, inst, cancelToken)
 end
@@ -563,7 +576,7 @@ end
 	@param className string | nil
 	@return Instance
 ]=]
-function Binder:Create(className)
+function Binder:Create(className: string)
 	assert(type(className) == "string" or className == nil, "Bad className")
 
 	local instance = Instance.new(className or self._defaultClassType)
@@ -575,7 +588,7 @@ function Binder:Create(className)
 	return instance
 end
 
-function Binder:_add(inst)
+function Binder:_add(inst: Instance)
 	assert(typeof(inst) == "Instance", "Argument 'inst' is not an Instance")
 
 	if self._instToClass[inst] then

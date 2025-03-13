@@ -1,4 +1,4 @@
---[=[
+--[[
 	Manages the cleaning of events and other things. Useful for
 	encapsulating state and make deconstructors easy.
 
@@ -18,29 +18,31 @@
 	maid:DoCleaning()
 	```
 
+	@ignore
 	@class Maid
-]=]
+]]
 -- luacheck: pop
 
 local Maid = {}
 Maid.ClassName = "Maid"
 
---[=[
+--[[
 	Constructs a new Maid object
 
 	```lua
 	local maid = Maid.new()
 	```
 
+	@ignore
 	@return Maid
-]=]
+]]
 function Maid.new()
 	return setmetatable({
-		_tasks = {}
+		_tasks = {},
 	}, Maid)
 end
 
---[=[
+--[[
 	Returns true if the class is a maid, and false otherwise.
 
 	```lua
@@ -48,14 +50,15 @@ end
 	print(Maid.isMaid(nil)) --> false
 	```
 
+	@ignore
 	@param value any
 	@return boolean
-]=]
-function Maid.isMaid(value)
+]]
+function Maid.isMaid(value: any): boolean
 	return type(value) == "table" and value.ClassName == "Maid"
 end
 
---[=[
+--[[
 	Returns Maid[key] if not part of Maid metatable
 
 	```lua
@@ -67,9 +70,10 @@ end
 	print(maid._current) --> nil
 	```
 
+	@ignore
 	@param index any
 	@return MaidTask
-]=]
+]]
 function Maid:__index(index)
 	if Maid[index] then
 		return Maid[index]
@@ -78,7 +82,7 @@ function Maid:__index(index)
 	end
 end
 
---[=[
+--[[
 	Add a task to clean up. Tasks given to a maid will be cleaned when
 	maid[index] is set to a different value.
 
@@ -94,9 +98,10 @@ end
 	Maid[key] = nil                Removes a named task.
 	```
 
+	@ignore
 	@param index any
 	@param newTask MaidTask
-]=]
+]]
 function Maid:__newindex(index, newTask)
 	if Maid[index] ~= nil then
 		error(string.format("Cannot use '%s' as a Maid key", tostring(index)), 2)
@@ -140,53 +145,56 @@ function Maid:__newindex(index, newTask)
 	end
 end
 
---[=[
+--[[
 	Gives a task to the maid for cleanup and returns the resulting value
 
+	@ignore
 	@param task MaidTask -- An item to clean
 	@return MaidTask
-]=]
-function Maid:Add(task)
+]]
+function Maid:Add<T>(task: T): T
 	if not task then
 		error("Task cannot be false or nil", 2)
 	end
 
-	self[#self._tasks+1] = task
+	self[#(self._tasks :: any) + 1] = task
 
-	if type(task) == "table" and (not task.Destroy) then
+	if type(task) == "table" and not task.Destroy then
 		warn("[Maid.Add] - Gave table task without .Destroy\n\n" .. debug.traceback())
 	end
 
 	return task
 end
 
---[=[
+--[[
 	Gives a task to the maid for cleanup, but uses an incremented number as a key.
 
+	@ignore
 	@param task MaidTask -- An item to clean
 	@return number -- taskId
-]=]
+]]
 function Maid:GiveTask(task)
 	if not task then
 		error("Task cannot be false or nil", 2)
 	end
 
-	local taskId = #self._tasks+1
+	local taskId = #(self._tasks :: any) + 1
 	self[taskId] = task
 
-	if type(task) == "table" and (not task.Destroy) then
+	if type(task) == "table" and not task.Destroy then
 		warn("[Maid.GiveTask] - Gave table task without .Destroy\n\n" .. debug.traceback())
 	end
 
 	return taskId
 end
 
---[=[
+--[[
 	Gives a promise to the maid for clean.
 
+	@ignore
 	@param promise Promise<T>
 	@return Promise<T>
-]=]
+]]
 function Maid:GivePromise(promise)
 	if not promise:IsPending() then
 		return promise
@@ -203,7 +211,7 @@ function Maid:GivePromise(promise)
 	return newPromise
 end
 
---[=[
+--[[
 	Cleans up all tasks and removes them as entries from the Maid.
 
 	:::note
@@ -218,7 +226,9 @@ end
 	However, adding tasks while cleaning is not generally a good idea, as if you add a
 	function that adds itself, this will loop indefinitely.
 	:::
-]=]
+
+	@ignore
+]]
 function Maid:DoCleaning()
 	local tasks = self._tasks
 
@@ -262,12 +272,13 @@ function Maid:DoCleaning()
 	end
 end
 
---[=[
+--[[
 	Alias for [Maid.DoCleaning()](/api/Maid#DoCleaning)
 
+	@ignore
 	@function Destroy
 	@within Maid
-]=]
+]]
 Maid.Destroy = Maid.DoCleaning
 
 return Maid

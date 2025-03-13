@@ -5,6 +5,10 @@
 	@class Set
 ]=]
 
+export type Set<Key> = { [Key]: boolean }
+export type Array<Value> = { [number]: Value }
+export type Map<Key, Value> = { [Key]: Value }
+
 local Set = {}
 
 --[=[
@@ -13,7 +17,7 @@ local Set = {}
 	@param otherSet table
 	@return table
 ]=]
-function Set.union(set, otherSet)
+function Set.union<T, U>(set: Set<T>, otherSet: Set<U>): Set<T | U>
 	local newSet = {}
 	for key, _ in set do
 		newSet[key] = true
@@ -30,7 +34,7 @@ end
 	@param otherSet table
 	@return table
 ]=]
-function Set.unionUpdate(set, otherSet)
+function Set.unionUpdate<T>(set: Set<T>, otherSet: Set<T>)
 	for key, _ in otherSet do
 		set[key] = true
 	end
@@ -42,7 +46,7 @@ end
 	@param otherSet table
 	@return table
 ]=]
-function Set.intersection(set, otherSet)
+function Set.intersection<T>(set: Set<T>, otherSet: Set<T>): Set<T>
 	local newSet = {}
 	for key, _ in set do
 		if otherSet[key] ~= nil then
@@ -57,7 +61,7 @@ end
 	@param set table
 	@return table
 ]=]
-function Set.copy(set)
+function Set.copy<T>(set: Set<T>): Set<T>
 	local newSet = {}
 	for key, _ in set do
 		newSet[key] = true
@@ -70,7 +74,7 @@ end
 	@param tab table
 	@return table
 ]=]
-function Set.fromKeys(tab)
+function Set.fromKeys<T>(tab: Map<T, any>): Set<T>
 	local newSet = {}
 	for key, _ in tab do
 		newSet[key] = true
@@ -83,7 +87,7 @@ end
 	@param tab table
 	@return table
 ]=]
-function Set.fromTableValue(tab)
+function Set.fromTableValue<T>(tab: Map<any, T>): Set<T>
 	local set = {}
 
 	for _, value in tab do
@@ -107,7 +111,7 @@ Set.fromList = Set.fromTableValue
 	@param set table
 	@return table
 ]=]
-function Set.toList(set)
+function Set.toList<T>(set: Set<T>): Array<T>
 	local list = {}
 
 	for value, _ in set do
@@ -123,7 +127,7 @@ end
 	@param otherSet table
 	@return table
 ]=]
-function Set.differenceUpdate(set, otherSet)
+function Set.differenceUpdate<T>(set: Set<T>, otherSet: Set<T>)
 	for value, _ in otherSet do
 		set[value] = nil
 	end
@@ -135,7 +139,7 @@ end
 	@param otherSet table
 	@return table
 ]=]
-function Set.difference(set, otherSet)
+function Set.difference<T>(set: Set<T>, otherSet: Set<T>): Set<T>
 	local newSet = {}
 	for key, _ in set do
 		newSet[key] = true

@@ -297,7 +297,7 @@ function ParticleEngineClient:_particleRender(cameraPosition, cameraInverse, fra
 	return true
 end
 
-function ParticleEngineClient:_updateScreenInfo(camera)
+function ParticleEngineClient:_updateScreenInfo(camera: Camera)
 	self._screenSizeX = self._screen.AbsoluteSize.x
 	self._screenSizeY = self._screen.AbsoluteSize.y
 	self._planeSizeY = 2*math.tan(camera.FieldOfView*0.0087266462599716)

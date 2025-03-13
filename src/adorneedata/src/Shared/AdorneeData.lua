@@ -89,7 +89,7 @@ AdorneeData.__index = AdorneeData
 	@param prototype any
 	@return AdorneeData<T>
 ]=]
-function AdorneeData.new(prototype)
+function AdorneeData.new(prototype: any)
 	local self = setmetatable({}, AdorneeData)
 
 	self._fullPrototype = assert(prototype, "Bad prototype")

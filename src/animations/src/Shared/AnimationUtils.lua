@@ -1,3 +1,4 @@
+--!strict
 --[=[
 	@class AnimationUtils
 ]=]
@@ -21,13 +22,14 @@ function AnimationUtils.playAnimation(
 	fadeTime: number?,
 	weight: number?,
 	speed: number?,
-	priority: AnimationPriority?): AnimationTrack?
+	priority: Enum.AnimationPriority?
+): AnimationTrack?
 	assert(typeof(target) == "Instance", "Bad target")
 	assert(RbxAssetUtils.isConvertableToRbxAsset(id), "Bad id")
 	assert(type(fadeTime) == "number" or fadeTime == nil, "Bad fadeTime")
 	assert(type(weight) == "number" or weight == nil, "Bad weight")
 	assert(type(speed) == "number" or speed == nil, "Bad speed")
-	assert(EnumUtils.isOfType(Enum.AnimationPriority, priority) or priority == nil, "Bad priority")
+	assert(priority == nil or EnumUtils.isOfType(Enum.AnimationPriority, priority), "Bad priority")
 
 	local animationTrack = AnimationUtils.getOrCreateAnimationTrack(target, id, priority)
 
@@ -47,7 +49,11 @@ end
 --[=[
 	Stops the animation on the target instance.
 ]=]
-function AnimationUtils.stopAnimation(target: Animator | Player | Model | AnimationController, id: string | number, fadeTime: number?): AnimationTrack?
+function AnimationUtils.stopAnimation(
+	target: Animator | Player | Model | AnimationController,
+	id: string | number,
+	fadeTime: number?
+): AnimationTrack?
 	assert(typeof(target) == "Instance", "Bad target")
 	assert(RbxAssetUtils.isConvertableToRbxAsset(id), "Bad id")
 	assert(type(fadeTime) == "number" or fadeTime == nil, "Bad fadeTime")
@@ -67,10 +73,11 @@ end
 function AnimationUtils.getOrCreateAnimationTrack(
 	target: Animator | Player | Model | AnimationController,
 	id: string | number,
-	priority: AnimationPriority?): AnimationTrack?
+	priority: Enum.AnimationPriority?
+): AnimationTrack?
 	assert(typeof(target) == "Instance", "Bad target")
 	assert(RbxAssetUtils.isConvertableToRbxAsset(id), "Bad id")
-	assert(EnumUtils.isOfType(Enum.AnimationPriority, priority) or priority == nil, "Bad priority")
+	assert(priority == nil or EnumUtils.isOfType(Enum.AnimationPriority, priority), "Bad priority")
 
 	local animator = AnimationUtils.getOrCreateAnimator(target)
 	if not animator then
@@ -91,7 +98,13 @@ function AnimationUtils.getOrCreateAnimationTrack(
 		animationTrack = animator:LoadAnimation(animation)
 	end)
 	if not ok then
-		warn(string.format("[AnimationUtils] - Failed to load animation with id %q due to %q", tostring(id), tostring(err)))
+		warn(
+			string.format(
+				"[AnimationUtils] - Failed to load animation with id %q due to %q",
+				tostring(id),
+				tostring(err)
+			)
+		)
 		return nil
 	end
 
@@ -101,7 +114,7 @@ end
 --[=[
 	Gets or creates an animation from the id in the animator
 ]=]
-function AnimationUtils.getOrCreateAnimationFromIdInAnimator(animator: Animator, id: string | number): Animation?
+function AnimationUtils.getOrCreateAnimationFromIdInAnimator(animator: Animator, id: string | number): Animation
 	assert(typeof(animator) == "Instance" and animator:IsA("Animator"), "Bad animator")
 	assert(RbxAssetUtils.isConvertableToRbxAsset(id), "Bad id")
 

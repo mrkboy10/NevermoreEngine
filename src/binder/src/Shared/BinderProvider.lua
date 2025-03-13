@@ -40,7 +40,7 @@ BinderProvider.__index = BinderProvider
 	@param initMethod (self, serviceBag: ServiceBag)
 	@return BinderProvider
 ]=]
-function BinderProvider.new(serviceName, initMethod)
+function BinderProvider.new(serviceName: string, initMethod)
 	local self = setmetatable({}, BinderProvider)
 
 	if type(serviceName) == "string" then
@@ -48,7 +48,9 @@ function BinderProvider.new(serviceName, initMethod)
 	else
 		-- Backwords compatibility (for now)
 		if type(serviceName) == "function" and initMethod == nil then
-			warn("[BinderProvider] - Missing serviceName for binder provider. Please pass in a service name as the first argument.")
+			warn(
+				"[BinderProvider] - Missing serviceName for binder provider. Please pass in a service name as the first argument."
+			)
 			initMethod = serviceName
 		else
 			error("Bad serviceName")
@@ -68,7 +70,7 @@ end
 	@param value any
 	@return boolean -- True if it is a binder provider
 ]=]
-function BinderProvider.isBinderProvider(value)
+function BinderProvider.isBinderProvider(value: any): boolean
 	return type(value) == "table" and value.ClassName == "BinderProvider"
 end
 

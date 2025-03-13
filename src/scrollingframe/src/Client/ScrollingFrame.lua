@@ -33,7 +33,7 @@ function ScrollingFrame.new(gui)
 	self._maid = Maid.new()
 	self.Gui = gui or error("No Gui")
 	self._container = self.Gui.Parent or error("No container")
-	self._scrollType = SCROLL_TYPE.Vertical;
+	self._scrollType = SCROLL_TYPE.Vertical
 
 	self._scrollbars = {}
 	self._model = ScrollModel.new()
@@ -182,12 +182,12 @@ function ScrollingFrame:_getVelocityTracker(strength)
 	end
 end
 
-function ScrollingFrame:_getInputProcessor(inputBeganObject)
+function ScrollingFrame:_getInputProcessor(inputBeganObject: InputObject)
 	local startPos = self._model.Position
 	local updateVelocity = self:_getVelocityTracker()
 	local originalPos = inputBeganObject.Position
 
-	return function(inputObject)
+	return function(inputObject: InputObject)
 		local distance = (inputObject.Position - originalPos)[self._scrollType.Direction]
 		local pos = startPos - distance
 		self._model.Position = pos

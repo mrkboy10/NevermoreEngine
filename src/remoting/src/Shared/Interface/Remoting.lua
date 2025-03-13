@@ -37,18 +37,20 @@ local Remoting = {}
 Remoting.ClassName = "Remoting"
 Remoting.__index = Remoting
 
+export type RemotingRealm = "server" | "client"
+
 Remoting.Realms = RemotingRealms
 
 Remoting.Server = {
 	new = function(instance, name)
 		return Remoting.new(instance, name, RemotingRealms.SERVER)
-	end;
+	end,
 }
 
 Remoting.Client = {
 	new = function(instance, name)
 		return Remoting.new(instance, name, RemotingRealms.CLIENT)
-	end;
+	end,
 }
 
 --[=[
@@ -59,7 +61,7 @@ Remoting.Client = {
 	@param remotingRealm RemotingRealm?
 	@return Remoting
 ]=]
-function Remoting.new(instance, name, remotingRealm)
+function Remoting.new(instance: Instance, name: string, remotingRealm: RemotingRealm?)
 	assert(typeof(instance) == "Instance", "Bad instance")
 	assert(type(name) == "string", "Bad name")
 	assert(RemotingRealmUtils.isRemotingRealm(remotingRealm) or remotingRealm == nil, "Bad remotingRealm")
@@ -93,10 +95,10 @@ end
 	Connects to a given remote event.
 
 	@param memberName string
-	@param callback string
+	@param callback (...: T...) -> ()
 	@return MaidTask
 ]=]
-function Remoting:Connect(memberName, callback)
+function Remoting:Connect<T...>(memberName: string, callback: (T...) -> ())
 	assert(type(memberName) == "string", "Bad memberName")
 	assert(type(callback) == "function", "Bad callback")
 
@@ -117,20 +119,28 @@ function Remoting:Connect(memberName, callback)
 		-- TODO: Cleanup if nothing else is expecting this
 	elseif self._remotingRealm == RemotingRealms.CLIENT then
 		connectMaid._warning = task.delay(5, function()
-			warn(string.format("[Remoting] - Failed to find RemoteEvent %q, event may never connect", self:_getDebugMemberName(memberName)))
+			warn(
+				string.format(
+					"[Remoting] - Failed to find RemoteEvent %q, event may never connect",
+					self:_getDebugMemberName(memberName)
+				)
+			)
 		end)
 
 		if self._useDummyObject then
-			connectMaid:GiveTask(self:_observeRemoteEventBrio(self:_getDummyMemberName(memberName, "OnClientEvent")):Subscribe(function(brio)
-				if brio:IsDead() then
-					return
-				end
+			connectMaid:GiveTask(
+				self:_observeRemoteEventBrio(self:_getDummyMemberName(memberName, "OnClientEvent"))
+					:Subscribe(function(brio)
+						if brio:IsDead() then
+							return
+						end
 
-				connectMaid._warning = nil
+						connectMaid._warning = nil
 
-				local maid, remoteEvent = brio:ToMaidAndValue()
-				maid:GiveTask(remoteEvent.Event:Connect(callback))
-			end))
+						local maid, remoteEvent = brio:ToMaidAndValue()
+						maid:GiveTask(remoteEvent.Event:Connect(callback))
+					end)
+			)
 		else
 			connectMaid:GiveTask(self:_observeRemoteEventBrio(memberName):Subscribe(function(brio)
 				if brio:IsDead() then
@@ -162,7 +172,7 @@ end
 	@param memberName string
 	@param callback any
 ]=]
-function Remoting:Bind(memberName, callback)
+function Remoting:Bind(memberName: string, callback)
 	assert(type(memberName) == "string", "Bad memberName")
 	assert(type(callback) == "function", "Bad callback")
 
@@ -172,7 +182,8 @@ function Remoting:Bind(memberName, callback)
 		if self._useDummyObject then
 			self:DeclareMethod(memberName)
 
-			local bindableFunction = self:_getOrCreateRemoteFunction(self:_getDummyMemberName(memberName, "OnServerInvoke"))
+			local bindableFunction =
+				self:_getOrCreateRemoteFunction(self:_getDummyMemberName(memberName, "OnServerInvoke"))
 			bindableFunction.OnInvoke = self:_translateCallback(bindMaid, memberName, callback)
 		else
 			local remoteFunction = self:_getOrCreateRemoteFunction(memberName)
@@ -182,20 +193,28 @@ function Remoting:Bind(memberName, callback)
 		-- TODO: Cleanup if nothing else is expecting this
 	elseif self._remotingRealm == RemotingRealms.CLIENT then
 		bindMaid._warning = task.delay(5, function()
-			warn(string.format("[Remoting] - Failed to find RemoteEvent %q, event may never fire", self:_getDebugMemberName(memberName)))
+			warn(
+				string.format(
+					"[Remoting] - Failed to find RemoteEvent %q, event may never fire",
+					self:_getDebugMemberName(memberName)
+				)
+			)
 		end)
 
 		if self._useDummyObject then
-			bindMaid:GiveTask(self:_observeRemoteFunctionBrio(self:_getDummyMemberName(memberName, "OnClientInvoke")):Subscribe(function(brio)
-				if brio:IsDead() then
-					return
-				end
+			bindMaid:GiveTask(
+				self:_observeRemoteFunctionBrio(self:_getDummyMemberName(memberName, "OnClientInvoke"))
+					:Subscribe(function(brio)
+						if brio:IsDead() then
+							return
+						end
 
-				bindMaid._warning = nil
+						bindMaid._warning = nil
 
-				local maid, remoteFunction = brio:ToMaidAndValue()
-				remoteFunction.OnInvoke = self:_translateCallback(maid, memberName, callback)
-			end))
+						local maid, remoteFunction = brio:ToMaidAndValue()
+						remoteFunction.OnInvoke = self:_translateCallback(maid, memberName, callback)
+					end)
+			)
 		else
 
 			bindMaid:GiveTask(self:_observeRemoteFunctionBrio(memberName):Subscribe(function(brio)
@@ -228,7 +247,7 @@ end
 
 	@param memberName string
 ]=]
-function Remoting:DeclareEvent(memberName)
+function Remoting:DeclareEvent(memberName: string)
 	assert(type(memberName) == "string", "Bad memberName")
 
 	if self._remotingRealm == RemotingRealms.SERVER then
@@ -246,7 +265,7 @@ end
 
 	@param memberName string
 ]=]
-function Remoting:DeclareMethod(memberName)
+function Remoting:DeclareMethod(memberName: string)
 	assert(type(memberName) == "string", "Bad memberName")
 
 	if self._remotingRealm == RemotingRealms.SERVER then
@@ -259,7 +278,7 @@ function Remoting:DeclareMethod(memberName)
 	end
 end
 
-function Remoting:_translateCallback(maid, memberName, callback)
+function Remoting:_translateCallback(maid, memberName: string, callback)
 	local alive = true
 	maid:GiveTask(function()
 		alive = false
@@ -267,14 +286,19 @@ function Remoting:_translateCallback(maid, memberName, callback)
 
 	return function(...)
 		if not alive then
-			error(string.format("[Remoting] - Function for %s is disconnected and can't be called", self:_getDebugMemberName(memberName)))
+			error(
+				string.format(
+					"[Remoting] - Function for %s is disconnected and can't be called",
+					self:_getDebugMemberName(memberName)
+				)
+			)
 			return
 		end
 
 		local results = table.pack(callback(...))
 
 		local hasPromise = false
-		for i=1, results.n do
+		for i = 1, results.n do
 			if Promise.isPromise(results[i]) then
 				hasPromise = true
 				break
@@ -287,7 +311,7 @@ function Remoting:_translateCallback(maid, memberName, callback)
 				promise = results[1]
 			else
 				local data = {}
-				for i=1, results.n do
+				for i = 1, results.n do
 					table.insert(data, results[i])
 				end
 
@@ -319,7 +343,7 @@ end
 	@param player Player
 	@param ... any
 ]=]
-function Remoting:FireClient(memberName, player, ...)
+function Remoting:FireClient<T...>(memberName: string, player: Player, ...: T...)
 	assert(type(memberName) == "string", "Bad memberName")
 	assert(typeof(player) == "Instance" and player:IsA("Player"), "Bad player")
 	assert(self._remotingRealm == RemotingRealms.SERVER, "FireClient must be called on server")
@@ -344,7 +368,7 @@ end
 	@param player Player
 	@param ... any
 ]=]
-function Remoting:InvokeClient(memberName, player, ...)
+function Remoting:InvokeClient<T...>(memberName: string, player: Player, ...: T...)
 	assert(type(memberName) == "string", "Bad memberName")
 	assert(typeof(player) == "Instance" and player:IsA("Player"), "Bad player")
 	assert(self._remotingRealm == RemotingRealms.SERVER, "InvokeClient must be called on server")
@@ -368,7 +392,7 @@ end
 	@param memberName string
 	@param ... any
 ]=]
-function Remoting:FireAllClients(memberName, ...)
+function Remoting:FireAllClients<T...>(memberName: string, ...: T...)
 	assert(type(memberName) == "string", "Bad memberName")
 	assert(self._remotingRealm == RemotingRealms.SERVER, "FireAllClients must be called on server")
 
@@ -391,9 +415,12 @@ end
 	@param excludePlayer Player | nil
 	@param ... any
 ]=]
-function Remoting:FireAllClientsExcept(memberName, excludePlayer, ...)
+function Remoting:FireAllClientsExcept<T...>(memberName: string, excludePlayer: Player, ...: T...)
 	assert(type(memberName) == "string", "Bad memberName")
-	assert(typeof(excludePlayer) == "Instance" and excludePlayer:IsA("Player") or excludePlayer == nil, "Bad excludePlayer")
+	assert(
+		typeof(excludePlayer) == "Instance" and excludePlayer:IsA("Player") or excludePlayer == nil,
+		"Bad excludePlayer"
+	)
 	assert(self._remotingRealm == RemotingRealms.SERVER, "FireAllClientsExcept must be called on server")
 
 	if self._useDummyObject then
@@ -417,7 +444,7 @@ end
 	@param memberName string
 	@param ... any
 ]=]
-function Remoting:FireServer(memberName, ...)
+function Remoting:FireServer<T...>(memberName: string, ...: T...)
 	assert(type(memberName) == "string", "Bad memberName")
 	assert(self._remotingRealm == RemotingRealms.CLIENT, "FireServer must be called on client")
 
@@ -432,7 +459,7 @@ end
 	@param ... any
 	@return Promise
 ]=]
-function Remoting:PromiseFireServer(memberName, ...)
+function Remoting:PromiseFireServer<T...>(memberName: string, ...: T...)
 	assert(type(memberName) == "string", "Bad memberName")
 	assert(self._remotingRealm == RemotingRealms.CLIENT, "PromiseFireServer must be called on client")
 
@@ -446,10 +473,9 @@ function Remoting:PromiseFireServer(memberName, ...)
 				bindableEvent:Fire(Players.LocalPlayer, table.unpack(args, 1, args.n))
 			end)
 	else
-		promise = self:_promiseRemoteEvent(fireMaid, memberName)
-			:Then(function(remoteEvent)
-				remoteEvent:FireServer(table.unpack(args, 1, args.n))
-			end)
+		promise = self:_promiseRemoteEvent(fireMaid, memberName):Then(function(remoteEvent)
+			remoteEvent:FireServer(table.unpack(args, 1, args.n))
+		end)
 	end
 
 	promise:Finally(function()
@@ -473,7 +499,7 @@ end
 	@param ... any
 	@return any
 ]=]
-function Remoting:InvokeServer(memberName, ...)
+function Remoting:InvokeServer<T...>(memberName: string, ...: T...)
 	assert(type(memberName) == "string", "Bad memberName")
 
 	return self:PromiseInvokeServer(memberName, ...):Wait()
@@ -487,7 +513,7 @@ end
 	@param ... any
 	@return Promise<any>
 ]=]
-function Remoting:PromiseInvokeServer(memberName, ...)
+function Remoting:PromiseInvokeServer<T...>(memberName: string, ...: T...)
 	assert(type(memberName) == "string", "Bad memberName")
 
 	local invokeMaid = Maid.new()
@@ -497,13 +523,20 @@ function Remoting:PromiseInvokeServer(memberName, ...)
 	if self._useDummyObject then
 		promise = self:_promiseRemoteFunction(invokeMaid, self:_getDummyMemberName(memberName, "OnServerInvoke"))
 			:Then(function(remoteFunction)
-				return invokeMaid:GivePromise(RemoteFunctionUtils.promiseInvokeBindableFunction(remoteFunction, Players.LocalPlayer, table.unpack(args, 1, args.n)))
+				return invokeMaid:GivePromise(
+					RemoteFunctionUtils.promiseInvokeBindableFunction(
+						remoteFunction,
+						Players.LocalPlayer,
+						table.unpack(args, 1, args.n)
+					)
+				)
 			end)
 	else
-		promise = self:_promiseRemoteFunction(invokeMaid, memberName)
-			:Then(function(remoteFunction)
-				return invokeMaid:GivePromise(RemoteFunctionUtils.promiseInvokeServer(remoteFunction, table.unpack(args, 1, args.n)))
-			end)
+		promise = self:_promiseRemoteFunction(invokeMaid, memberName):Then(function(remoteFunction)
+			return invokeMaid:GivePromise(
+				RemoteFunctionUtils.promiseInvokeServer(remoteFunction, table.unpack(args, 1, args.n))
+			)
+		end)
 	end
 
 	promise:Finally(function()
@@ -528,7 +561,7 @@ end
 	@param ... any
 	@return Promise<any>
 ]=]
-function Remoting:PromiseInvokeClient(memberName, player, ...)
+function Remoting:PromiseInvokeClient<T...>(memberName: string, player: Player, ...: T...)
 	assert(type(memberName) == "string", "Bad memberName")
 	assert(typeof(player) == "Instance" and player:IsA("Player"), "Bad player")
 
@@ -555,7 +588,7 @@ function Remoting:PromiseInvokeClient(memberName, player, ...)
 	return promise
 end
 
-function Remoting:GetContainerClass()
+function Remoting:GetContainerClass(): string
 	return "Configuration"
 end
 
@@ -576,7 +609,7 @@ function Remoting:_ensureContainer()
 	return self._container
 end
 
-function Remoting:_observeRemoteFunctionBrio(memberName)
+function Remoting:_observeRemoteFunctionBrio(memberName: string)
 	assert(type(memberName) == "string", "Bad memberName")
 
 	local remoteFunctionName = self:_getMemberName(memberName, REMOTE_FUNCTION_SUFFIX)
@@ -588,11 +621,11 @@ function Remoting:_observeRemoteFunctionBrio(memberName)
 			else
 				return RxInstanceUtils.observeLastNamedChildBrio(item, "RemoteFunction", remoteFunctionName)
 			end
-		end)
+		end),
 	})
 end
 
-function Remoting:_observeRemoteEventBrio(memberName)
+function Remoting:_observeRemoteEventBrio(memberName: string)
 	assert(type(memberName) == "string", "Bad memberName")
 
 	local remoteFunctionName = self:_getMemberName(memberName, REMOTE_EVENT_SUFFIX)
@@ -604,7 +637,7 @@ function Remoting:_observeRemoteEventBrio(memberName)
 			else
 				return RxInstanceUtils.observeLastNamedChildBrio(item, "RemoteEvent", remoteFunctionName)
 			end
-		end)
+		end),
 	})
 end
 
@@ -612,20 +645,18 @@ function Remoting:_promiseContainer(maid)
 	return maid:GivePromise(promiseChild(self._instance, self._remoteFolderName, 5))
 end
 
-function Remoting:_promiseRemoteEvent(maid, memberName)
+function Remoting:_promiseRemoteEvent(maid, memberName: string)
 	local remoteEventName = self:_getMemberName(memberName, REMOTE_EVENT_SUFFIX)
-	return self:_promiseContainer(maid)
-		:Then(function(container)
-			return maid:GivePromise(promiseChild(container, remoteEventName, 5))
-		end)
+	return self:_promiseContainer(maid):Then(function(container)
+		return maid:GivePromise(promiseChild(container, remoteEventName, 5))
+	end)
 end
 
-function Remoting:_promiseRemoteFunction(maid, memberName)
+function Remoting:_promiseRemoteFunction(maid, memberName: string)
 	local remoteEventName = self:_getMemberName(memberName, REMOTE_FUNCTION_SUFFIX)
-	return self:_promiseContainer(maid)
-		:Then(function(container)
-			return maid:GivePromise(promiseChild(container, remoteEventName, 5))
-		end)
+	return self:_promiseContainer(maid):Then(function(container)
+		return maid:GivePromise(promiseChild(container, remoteEventName, 5))
+	end)
 end
 
 function Remoting:_observeFolderBrio()
@@ -662,7 +693,7 @@ function Remoting:_getOrCreateRemoteFunction(memberName)
 	return remoteFunction
 end
 
-function Remoting:_getOrCreateRemoteEvent(memberName)
+function Remoting:_getOrCreateRemoteEvent(memberName: string): RemoteEvent
 	assert(type(memberName) == "string", "Bad memberName")
 
 	local remoteEventName = self:_getMemberName(memberName, REMOTE_EVENT_SUFFIX)
@@ -673,7 +704,7 @@ function Remoting:_getOrCreateRemoteEvent(memberName)
 
 	local container = self:_ensureContainer()
 
-	local remoteEvent
+	local remoteEvent: RemoteEvent
 	if self._useDummyObject then
 		remoteEvent = Instance.new("BindableEvent")
 	else
@@ -690,17 +721,17 @@ function Remoting:_getOrCreateRemoteEvent(memberName)
 	return remoteEvent
 end
 
-function Remoting:_getMemberName(memberName, objectType)
+function Remoting:_getMemberName(memberName: string, objectType: string): string
 	return memberName .. objectType
 end
 
-function Remoting:_getDummyMemberName(memberName, suffix)
+function Remoting:_getDummyMemberName(memberName: string, suffix: string): string
 	assert(self._useDummyObject, "Not dummy mode")
 
 	return memberName .. "_" .. suffix .. "_"
 end
 
-function Remoting:_getDebugMemberName(memberName)
+function Remoting:_getDebugMemberName(memberName: string): string
 	return string.format("%s.%s", self._name, memberName)
 end
 

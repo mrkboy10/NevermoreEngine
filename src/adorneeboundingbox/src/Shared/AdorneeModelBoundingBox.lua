@@ -17,7 +17,7 @@ local AdorneeModelBoundingBox = setmetatable({}, BaseObject)
 AdorneeModelBoundingBox.ClassName = "AdorneeModelBoundingBox"
 AdorneeModelBoundingBox.__index = AdorneeModelBoundingBox
 
-function AdorneeModelBoundingBox.new(model)
+function AdorneeModelBoundingBox.new(model: Model)
 	local self = setmetatable(BaseObject.new(model), AdorneeModelBoundingBox)
 
 	self._bbCFrame = self._maid:Add(ValueObject.new(nil))

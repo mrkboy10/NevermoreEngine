@@ -116,7 +116,7 @@ end
 	@param object T
 	@return OctreeNode<T>
 ]=]
-function Octree:CreateNode(position, object)
+function Octree:CreateNode(position: Vector3, object: any)
 	assert(typeof(position) == "Vector3", "Bad position value")
 	assert(object, "Bad object value")
 
@@ -144,11 +144,11 @@ end
 	@return { T } -- Objects found
 	@return { number } -- Distances squared
 ]=]
-function Octree:RadiusSearch(position, radius)
+function Octree:RadiusSearch(position: Vector3, radius: number)
 	assert(typeof(position) == "Vector3", "Bad position")
 	assert(type(radius) == "number", "Bad radius")
 
-	local px, py, pz = position.x, position.y, position.z
+	local px, py, pz = position.X, position.Y, position.Z
 	return self:_radiusSearch(px, py, pz, radius)
 end
 

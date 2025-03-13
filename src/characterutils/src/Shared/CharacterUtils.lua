@@ -1,3 +1,4 @@
+--!strict
 --[=[
 	General character utility code.
 	@class CharacterUtils

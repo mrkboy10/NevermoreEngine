@@ -66,6 +66,8 @@ local ValueObject = require("ValueObject")
 
 local UNSET_VALUE = Symbol.named("unsetValue")
 
+export type TieRealm = "shared" | "client" | "server"
+
 local TieDefinition = {}
 TieDefinition.ClassName = "TieDefinition"
 TieDefinition.__index = TieDefinition
@@ -85,7 +87,7 @@ TieDefinition.Realms = TieRealms
 	@param members any
 	@return TieDefinition
 ]=]
-function TieDefinition.new(definitionName, members)
+function TieDefinition.new(definitionName: string, members)
 	local self = setmetatable({}, TieDefinition)
 
 	self._definitionName = assert(definitionName, "No definitionName")
@@ -146,7 +148,7 @@ end
 	@param tieRealm TieRealm?
 	@return { TieInterface }
 ]=]
-function TieDefinition:GetImplementations(adornee: Instance, tieRealm)
+function TieDefinition:GetImplementations(adornee: Instance, tieRealm: TieRealm?)
 	assert(typeof(adornee) == "Instance", "Bad adornee")
 	assert(TieRealmUtils.isTieRealm(tieRealm) or tieRealm == nil, "Bad tieRealm")
 
@@ -184,7 +186,7 @@ local IMPL_SHARED_SET = table.freeze({
 	["Configuration"] = true,
 })
 
-function TieDefinition:GetImplClassSet(tieRealm)
+function TieDefinition:GetImplClassSet(tieRealm: TieRealm): { [string]: boolean }
 	if tieRealm == TieRealms.CLIENT then
 		-- Shared implements both...
 		return IMPL_CLIENT_SET
@@ -197,7 +199,7 @@ function TieDefinition:GetImplClassSet(tieRealm)
 	end
 end
 
-function TieDefinition:GetImplementationParents(adornee, tieRealm)
+function TieDefinition:GetImplementationParents(adornee: BasePart, tieRealm: TieRealm?): { Instance }
 	assert(typeof(adornee) == "Instance", "Bad adornee")
 	assert(TieRealmUtils.isTieRealm(tieRealm) or tieRealm == nil, "Bad tieRealm")
 
@@ -243,7 +245,7 @@ end
 	@param tieRealm TieRealm?
 	@return Promise<TieInterface>
 ]=]
-function TieDefinition:Promise(adornee: Instance, tieRealm)
+function TieDefinition:Promise(adornee: Instance, tieRealm: TieRealm?)
 	assert(typeof(adornee) == "Instance", "Bad adornee")
 	assert(TieRealmUtils.isTieRealm(tieRealm) or tieRealm == nil, "Bad tieRealm")
 
@@ -286,7 +288,7 @@ end
 	@param tieRealm TieRealm?
 	@return TieInterface | nil
 ]=]
-function TieDefinition:Find(adornee: Instance, tieRealm)
+function TieDefinition:Find(adornee: Instance, tieRealm: TieRealm?)
 	assert(typeof(adornee) == "Instance", "Bad adornee")
 	assert(TieRealmUtils.isTieRealm(tieRealm) or tieRealm == nil, "Bad tieRealm")
 
@@ -300,7 +302,7 @@ end
 	@param tieRealm TieRealm?
 	@return TieInterface | nil
 ]=]
-function TieDefinition:ObserveAllTaggedBrio(tagName, tieRealm)
+function TieDefinition:ObserveAllTaggedBrio(tagName: string, tieRealm: TieRealm?)
 	assert(type(tagName) == "string", "Bad tagName")
 	assert(TieRealmUtils.isTieRealm(tieRealm) or tieRealm == nil, "Bad tieRealm")
 
@@ -317,7 +319,7 @@ end
 	@param tieRealm TieRealm?
 	@return TieInterface
 ]=]
-function TieDefinition:FindFirstImplementation(adornee: Instance, tieRealm)
+function TieDefinition:FindFirstImplementation(adornee: Instance, tieRealm: TieRealm?)
 	assert(typeof(adornee) == "Instance", "Bad adornee")
 	assert(TieRealmUtils.isTieRealm(tieRealm) or tieRealm == nil, "Bad tieRealm")
 
@@ -411,7 +413,7 @@ end
 	@param tieRealm TieRealm?
 	@return Observable<boolean>>
 ]=]
-function TieDefinition:ObserveIsImplementedOn(implParent: Instance, adornee: Instance, tieRealm)
+function TieDefinition:ObserveIsImplementedOn(implParent: Instance, adornee: Instance, tieRealm: TieRealm?)
 	assert(typeof(implParent) == "Instance", "Bad implParent")
 	assert(typeof(adornee) == "Instance", "Bad adornee")
 	assert(TieRealmUtils.isTieRealm(tieRealm) or tieRealm == nil, "Bad tieRealm")
@@ -440,7 +442,7 @@ end
 	@param tieRealm TieRealm?
 	@return Observable<Brio<TieImplementation<T>>>
 ]=]
-function TieDefinition:ObserveBrio(adornee: Instance, tieRealm)
+function TieDefinition:ObserveBrio(adornee: Instance, tieRealm: TieRealm?)
 	assert(typeof(adornee) == "Instance", "Bad adornee")
 	assert(TieRealmUtils.isTieRealm(tieRealm) or tieRealm == nil, "Bad tieRealm")
 
@@ -461,7 +463,7 @@ end
 	@param tieRealm TieRealm?
 	@return Observable<TieImplementation<T> | nil>>
 ]=]
-function TieDefinition:Observe(adornee: Instance, tieRealm)
+function TieDefinition:Observe(adornee: Instance, tieRealm: TieRealm?)
 	assert(typeof(adornee) == "Instance", "Bad adornee")
 	assert(TieRealmUtils.isTieRealm(tieRealm) or tieRealm == nil, "Bad tieRealm")
 
@@ -479,7 +481,7 @@ TieDefinition.ObserveLastImplementationBrio = TieDefinition.ObserveBrio
 	@param tieRealm TieRealm?
 	@return Observable<Brio<TieImplementation<T>>>
 ]=]
-function TieDefinition:ObserveImplementationsBrio(adornee: Instance, tieRealm)
+function TieDefinition:ObserveImplementationsBrio(adornee: Instance, tieRealm: TieRealm?)
 	assert(typeof(adornee) == "Instance", "Bad adornee")
 	assert(TieRealmUtils.isTieRealm(tieRealm) or tieRealm == nil, "Bad tieRealm")
 
@@ -492,7 +494,7 @@ function TieDefinition:ObserveImplementationsBrio(adornee: Instance, tieRealm)
 	})
 end
 
-function TieDefinition:ObserveValidContainerChildrenBrio(adornee, tieRealm)
+function TieDefinition:ObserveValidContainerChildrenBrio(adornee: Instance, tieRealm: TieRealm?)
 	assert(typeof(adornee) == "Instance", "Bad adornee")
 	assert(TieRealmUtils.isTieRealm(tieRealm), "Bad tieRealm")
 
@@ -505,7 +507,7 @@ function TieDefinition:ObserveValidContainerChildrenBrio(adornee, tieRealm)
 	end)
 end
 
-function TieDefinition:_observeImplementation(implParent, tieRealm)
+function TieDefinition:_observeImplementation(implParent: Instance, tieRealm: TieRealm?)
 	assert(TieRealmUtils.isTieRealm(tieRealm), "Bad tieRealm")
 
 	return Observable.new(function(sub)
@@ -582,7 +584,7 @@ end
 	@param tieRealm TieRealm?
 	@return TieImplementation<T>
 ]=]
-function TieDefinition:Implement(adornee: Instance, implementer, tieRealm)
+function TieDefinition:Implement(adornee: Instance, implementer, tieRealm: TieRealm?)
 	assert(typeof(adornee) == "Instance", "Bad adornee")
 	assert(type(implementer) == "table" or implementer == nil, "Bad implementer")
 	assert(TieRealmUtils.isTieRealm(tieRealm) or tieRealm == nil, "Bad tieRealm")
@@ -606,7 +608,7 @@ end
 	@param tieRealm TieRealm?
 	@return TieInterface<T>
 ]=]
-function TieDefinition:Get(adornee: Instance, tieRealm)
+function TieDefinition:Get(adornee: Instance, tieRealm: TieRealm?)
 	assert(typeof(adornee) == "Instance", "Bad adornee")
 	assert(TieRealmUtils.isTieRealm(tieRealm) or tieRealm == nil, "Bad tieRealm")
 
@@ -629,7 +631,7 @@ end
 	@param tieRealm TieRealm
 	@return { [string]: boolean }
 ]=]
-function TieDefinition:GetValidContainerNameSet(tieRealm)
+function TieDefinition:GetValidContainerNameSet(tieRealm: TieRealm?): { [string]: boolean }
 	-- TODO: Still generate unique datamodel key here?
 	if self._validContainerNameSetWeakCache[tieRealm] then
 		return self._validContainerNameSetWeakCache[tieRealm]
@@ -669,7 +671,7 @@ end
 	@param tieRealm TieRealm
 	@return string
 ]=]
-function TieDefinition:GetNewContainerName(tieRealm): string
+function TieDefinition:GetNewContainerName(tieRealm: TieRealm): string
 	assert(TieRealmUtils.isTieRealm(tieRealm), "Bad tieRealm")
 
 	-- TODO: Handle server/actor

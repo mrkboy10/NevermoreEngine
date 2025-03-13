@@ -1,3 +1,4 @@
+--!strict
 --[=[
 	Debounce a existing function by timeout
 
@@ -18,7 +19,7 @@ local ThrottledFunction = require("ThrottledFunction")
 	@param throttleConfig? { leading = true; trailing = true; }
 	@return function
 ]=]
-local function throttle(timeoutInSeconds, func, throttleConfig)
+local function throttle<T>(timeoutInSeconds: number, func: T, throttleConfig: ThrottledFunction.ThrottleConfig): T
 	assert(type(timeoutInSeconds) == "number", "timeoutInSeconds is not a number")
 	assert(type(func) == "function", "func is not a function")
 

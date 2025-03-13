@@ -20,7 +20,7 @@ local CameraStoryUtils = {}
 	@param topCamera Camera
 	@return Camera
 ]=]
-function CameraStoryUtils.reflectCamera(maid, topCamera)
+function CameraStoryUtils.reflectCamera(maid, topCamera: Camera)
 	local camera = Instance.new("Camera")
 	camera.Name = "ReflectedCamera"
 	maid:GiveTask(camera)
@@ -43,7 +43,7 @@ end
 	@param target GuiBase
 	@return ViewportFrame
 ]=]
-function CameraStoryUtils.setupViewportFrame(maid, target)
+function CameraStoryUtils.setupViewportFrame(maid, target: GuiBase)
 	local viewportFrame = Instance.new("ViewportFrame")
 	viewportFrame.ZIndex = 0
 	viewportFrame.BorderSizePixel = 0

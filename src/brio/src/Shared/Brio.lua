@@ -74,7 +74,7 @@ Brio.__index = Brio
 	@param value any
 	@return boolean
 ]=]
-function Brio.isBrio(value)
+function Brio.isBrio(value): boolean
 	return type(value) == "table" and value.ClassName == "Brio"
 end
 
@@ -101,7 +101,7 @@ end
 	@param ... any -- Brio values
 	@return Brio
 ]=]
-function Brio.delayed(time, ...)
+function Brio.delayed(time: number, ...)
 	local brio = Brio.new(...)
 	task.delay(time, function()
 		brio:Kill()
@@ -192,7 +192,7 @@ end
 
 	@return Maid
 ]=]
-function Brio:ToMaid()
+function Brio:ToMaid(): Maid.Maid
 	assert(self.n ~= nil, "Brio is dead")
 
 	local maid = Maid.new()
@@ -204,7 +204,7 @@ function Brio:ToMaid()
 	return maid
 end
 
-function Brio:ToMaidAndValue()
+function Brio:ToMaidAndValue(): (Maid.Maid, T)
 	return self:ToMaid(), self:GetValue()
 end
 

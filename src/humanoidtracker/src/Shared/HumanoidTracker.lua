@@ -42,7 +42,7 @@ HumanoidTracker.__index = HumanoidTracker
 	@param player Player
 	@return HumanoidTracker
 ]=]
-function HumanoidTracker.new(player)
+function HumanoidTracker.new(player: Player)
 	local self = setmetatable(BaseObject.new(), HumanoidTracker)
 
 	self._player = player or error("No player")

@@ -51,7 +51,7 @@ end
 	Skips forward in the set amount of time dictated by `delta`
 	@param delta number
 ]=]
-function Kinematics:TimeSkip(delta)
+function Kinematics:TimeSkip(delta: number)
 	assert(type(delta) == "number", "Bad delta")
 
 	local now = self._clock()

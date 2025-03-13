@@ -22,7 +22,7 @@ CancelToken.__index = CancelToken
 	@param executor (cancel: () -> ()) -> ()
 	@return CancelToken
 ]=]
-function CancelToken.new(executor)
+function CancelToken.new(executor:  (() -> ()) -> ())
 	local self = setmetatable({}, CancelToken)
 
 	assert(type(executor) == "function", "Bad executor")

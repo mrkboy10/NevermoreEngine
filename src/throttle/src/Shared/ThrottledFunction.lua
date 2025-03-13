@@ -1,13 +1,20 @@
+--!strict
 --[=[
 	Throttles execution of a functon. Does both leading, and following
 	@class ThrottledFunction
 ]=]
 
+export type ThrottleConfig = {
+	leading: boolean?,
+	trailing: boolean?,
+	leadingFirstTimeOnly: boolean?,
+}
+
 local ThrottledFunction = {}
 ThrottledFunction.ClassName = "ThrottledFunction"
 ThrottledFunction.__index = ThrottledFunction
 
-function ThrottledFunction.new(timeoutInSeconds, func, config)
+function ThrottledFunction.new(timeoutInSeconds: number, func, config: ThrottleConfig)
 	local self = setmetatable({}, ThrottledFunction)
 
 	self._nextCallTimeStamp = 0
@@ -72,7 +79,7 @@ function ThrottledFunction:_dispatch()
 	end
 end
 
-function ThrottledFunction:_configureOrError(throttleConfig)
+function ThrottledFunction:_configureOrError(throttleConfig: ThrottleConfig)
 	if throttleConfig == nil then
 		return
 	end

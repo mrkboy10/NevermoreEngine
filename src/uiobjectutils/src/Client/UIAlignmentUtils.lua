@@ -1,3 +1,4 @@
+--!strict
 --[=[
 	Utility methods for working with horizontal and vertical alignment
 	@class UIAlignmentUtils

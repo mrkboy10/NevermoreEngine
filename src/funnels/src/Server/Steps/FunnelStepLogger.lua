@@ -16,7 +16,7 @@ local FunnelStepLogger = setmetatable({}, BaseObject)
 FunnelStepLogger.ClassName = "FunnelStepLogger"
 FunnelStepLogger.__index = FunnelStepLogger
 
-function FunnelStepLogger.new(player, funnelName)
+function FunnelStepLogger.new(player: Player, funnelName: string)
 	local self = setmetatable(BaseObject.new(), FunnelStepLogger)
 
 	self._player = assert(player, "No player")
@@ -42,24 +42,24 @@ function FunnelStepLogger.new(player, funnelName)
 	return self
 end
 
-function FunnelStepLogger:SetPrintDebugEnabled(debugEnabled)
+function FunnelStepLogger:SetPrintDebugEnabled(debugEnabled: boolean)
 	assert(type(debugEnabled) == "boolean", "Bad debugEnabled")
 
 	self._printDebugEnabled = debugEnabled
 end
 
-function FunnelStepLogger:LogStep(stepNumber, stepName)
+function FunnelStepLogger:LogStep(stepNumber: number, stepName: string)
 	assert(type(stepNumber) == "number", "Bad stepNumber")
 	assert(type(stepName) == "string", "Bad stepName")
 
 	self._stepTracker:LogStep(stepNumber, stepName)
 end
 
-function FunnelStepLogger:IsStepComplete(stepNumber)
+function FunnelStepLogger:IsStepComplete(stepNumber: number): boolean
 	return self._stepTracker:IsStepComplete(stepNumber)
 end
 
-function FunnelStepLogger:_sendStep(stepNumber, stepName)
+function FunnelStepLogger:_sendStep(stepNumber: number, stepName: string)
 	AnalyticsService:LogFunnelStepEvent(self._player, self._funnelName, self._funnelSessionId, stepNumber, stepName)
 
 	if self._printDebugEnabled then

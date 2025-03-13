@@ -1,3 +1,4 @@
+--!nocheck
 --[=[
 	A text label with most general properties of a textlabel, except when text is set,
 	it rotates uniformly like an old clock, animating in a satisfying way
@@ -54,7 +55,7 @@ function RotatingLabel.new()
 
 						newLabel.Gui.Position = self:_getLabelPosition(index)
 
-						for _, propertyName in pairs({"Transparency", "Damper", "Speed"}) do
+						for _, propertyName in pairs({ "Transparency", "Damper", "Speed" }) do
 							if newLabel[propertyName] ~= self[propertyName] then
 								newLabel[propertyName] = self[propertyName]
 							end
@@ -68,8 +69,8 @@ function RotatingLabel.new()
 				return rawget(labels, labelsIndex)
 				-- error(index .. " is not a valid member")
 			end
-		end;
-	});
+		end,
+	})
 
 	self._bindKey = "RotatingLabel" .. tostring(self)
 

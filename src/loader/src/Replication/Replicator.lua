@@ -128,7 +128,7 @@ end
 
 	@param target Instance?
 ]=]
-function Replicator:SetTarget(target)
+function Replicator:SetTarget(target: Instance?)
 	assert(typeof(target) == "Instance" or target == nil, "Bad target")
 
 	self._target.Value = target

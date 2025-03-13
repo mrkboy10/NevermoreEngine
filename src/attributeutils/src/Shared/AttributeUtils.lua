@@ -48,7 +48,7 @@ local VALID_ATTRIBUTE_TYPES = {
 	@param valueType string
 	@return boolean
 ]=]
-function AttributeUtils.isValidAttributeType(valueType)
+function AttributeUtils.isValidAttributeType(valueType: string): boolean
 	return VALID_ATTRIBUTE_TYPES[valueType] == true
 end
 
@@ -61,7 +61,7 @@ end
 	@param cancelToken CancelToken
 	@return Promise<any>
 ]=]
-function AttributeUtils.promiseAttribute(instance, attributeName, predicate, cancelToken)
+function AttributeUtils.promiseAttribute(instance: Instance, attributeName: string, predicate, cancelToken)
 	assert(typeof(instance) == "Instance", "Bad instance")
 	assert(type(attributeName) == "string", "Bad attributeName")
 	assert(CancelToken.isCancelToken(cancelToken) or cancelToken == nil, "Bad cancelToken")
@@ -99,7 +99,6 @@ function AttributeUtils.promiseAttribute(instance, attributeName, predicate, can
 	return promise
 end
 
-
 --[=[
 	Whenever the attribute is true, the binder will be bound, and when the
 	binder is bound, the attribute will be true.
@@ -109,7 +108,7 @@ end
 	@param binder Binder<T>
 	@return Maid
 ]=]
-function AttributeUtils.bindToBinder(instance, attributeName, binder)
+function AttributeUtils.bindToBinder(instance: Instance, attributeName: string, binder)
 	assert(binder, "Bad binder")
 	assert(typeof(instance) == "Instance", "Bad instance")
 	assert(type(attributeName) == "string", "Bad attributeName")
@@ -174,7 +173,7 @@ end
 	@param default any
 	@return any? -- The value of the attribute
 ]=]
-function AttributeUtils.initAttribute(instance, attributeName, default)
+function AttributeUtils.initAttribute(instance: Instance, attributeName: string, default: any): any
 	assert(typeof(instance) == "Instance", "Bad instance")
 	assert(typeof(attributeName) == "string", "Bad attributeName")
 
@@ -194,7 +193,7 @@ end
 	@param default T?
 	@return T?
 ]=]
-function AttributeUtils.getAttribute(instance, attributeName, default)
+function AttributeUtils.getAttribute(instance: Instance, attributeName: string, default: any): any
 	local value = instance:GetAttribute(attributeName)
 	if value == nil then
 		return default

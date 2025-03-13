@@ -8,12 +8,15 @@
 	@type Destructable Instance | { Destroy: function }
 	@within MaidTaskUtils
 ]=]
+export type Destructable = Instance | { Destroy: () -> () }
 
 --[=[
 	An object that can be cleaned up
 	@type MaidTask function | thread | Destructable | RBXScriptConnection
 	@within MaidTaskUtils
 ]=]
+export type MaidTask = (() -> ()) | thread | Destructable | RBXScriptConnection
+
 local MaidTaskUtils = {}
 
 --[=[
@@ -22,7 +25,7 @@ local MaidTaskUtils = {}
 	@param job any
 	@return boolean
 ]=]
-function MaidTaskUtils.isValidTask(job)
+function MaidTaskUtils.isValidTask(job: any): boolean
 	local jobType = typeof(job)
 	return jobType == "function"
 		or jobType == "thread"
@@ -36,7 +39,7 @@ end
 
 	@param job MaidTask -- Task to execute
 ]=]
-function MaidTaskUtils.doTask(job)
+function MaidTaskUtils.doTask(job: MaidTask)
 	local jobType = typeof(job)
 	if jobType == "function" then
 		job()
@@ -78,7 +81,7 @@ end
 	@param job MaidTask -- Job to delay execution
 	@return () -> () -- function that will execute the job delayed
 ]=]
-function MaidTaskUtils.delayed(time, job)
+function MaidTaskUtils.delayed(time: number, job: MaidTask)
 	assert(type(time) == "number", "Bad time")
 	assert(MaidTaskUtils.isValidTask(job), "Bad job")
 

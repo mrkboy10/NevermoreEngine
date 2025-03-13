@@ -1,3 +1,4 @@
+--!strict
 --[=[
 	A BaseObject basically just adds the :Destroy() interface, and a _maid, along with an optional object it references.
 	@class BaseObject
@@ -11,13 +12,21 @@ local BaseObject = {}
 BaseObject.ClassName = "BaseObject"
 BaseObject.__index = BaseObject
 
+export type BaseObject = typeof(setmetatable(
+	{} :: {
+		_obj: Instance?,
+		_maid: typeof(Maid.new()),
+	},
+	BaseObject
+))
+
 --[=[
 	Constructs a new BaseObject
 
 	@param obj? Instance
 	@return BaseObject
 ]=]
-function BaseObject.new(obj)
+function BaseObject.new(obj: Instance?): BaseObject
 	return setmetatable({
 		_maid = Maid.new();
 		_obj = obj;

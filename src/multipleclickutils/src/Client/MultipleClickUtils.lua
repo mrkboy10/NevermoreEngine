@@ -24,7 +24,7 @@ local VALID_TYPES = {
 	@param gui GuiBase
 	@return Observable<InputObject>
 ]=]
-function MultipleClickUtils.observeDoubleClick(gui)
+function MultipleClickUtils.observeDoubleClick(gui: GuiBase)
 	return MultipleClickUtils.observeMultipleClicks(gui, 2)
 end
 
@@ -35,8 +35,8 @@ end
 	@param gui GuiBase
 	@return Signal<InputObject>
 ]=]
-function MultipleClickUtils.getDoubleClickSignal(maid, gui)
-	return MultipleClickUtils.getDoubleClickSignal(maid, gui, 2)
+function MultipleClickUtils.getDoubleClickSignal(maid, gui: GuiBase)
+	return MultipleClickUtils.getMultipleClickSignal(maid, gui, 2)
 end
 
 --[=[
@@ -46,17 +46,16 @@ end
 	@param requiredCount number
 	@return Observable<InputObject>
 ]=]
-function MultipleClickUtils.observeMultipleClicks(gui, requiredCount)
+function MultipleClickUtils.observeMultipleClicks(gui: GuiBase, requiredCount: number)
 	assert(typeof(gui) == "Instance", "Bad gui")
 	assert(type(requiredCount) == "number", "Bad requiredCount")
 
 	return Observable.new(function(sub)
 		local maid = Maid.new()
 
-		maid:GiveTask(MultipleClickUtils.getMultipleClickSignal(maid, gui, requiredCount)
-			:Connect(function(...)
-				sub:Fire(...)
-			end))
+		maid:GiveTask(MultipleClickUtils.getMultipleClickSignal(maid, gui, requiredCount):Connect(function(...)
+			sub:Fire(...)
+		end))
 
 		return maid
 	end)
@@ -76,10 +75,10 @@ end
 	@param requiredCount number
 	@return (gui: GuiBase) -> Observable<InputObject>
 ]=]
-function MultipleClickUtils.onMultipleClicks(requiredCount)
+function MultipleClickUtils.onMultipleClicks(requiredCount: number)
 	assert(type(requiredCount) == "number", "Bad requiredCount")
 
-	return function(gui)
+	return function(gui: GuiBase)
 		return MultipleClickUtils.observeMultipleClicks(gui, requiredCount)
 	end
 end
@@ -93,7 +92,7 @@ end
 	@param requiredCount number
 	@return Signal<InputObject>
 ]=]
-function MultipleClickUtils.getMultipleClickSignal(maid, gui, requiredCount)
+function MultipleClickUtils.getMultipleClickSignal(maid, gui: GuiBase, requiredCount: number)
 	assert(Maid.isMaid(maid), "Bad maid")
 	assert(typeof(gui) == "Instance", "Bad gui")
 	assert(type(requiredCount) == "number", "Bad requiredCount")

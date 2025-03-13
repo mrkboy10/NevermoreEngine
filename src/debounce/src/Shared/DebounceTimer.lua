@@ -11,7 +11,7 @@ DebounceTimer.__index = DebounceTimer
 	@param length number
 	@return DebounceTimer
 ]=]
-function DebounceTimer.new(length)
+function DebounceTimer.new(length: number)
 	local self = setmetatable({}, DebounceTimer)
 
 	self._length = length or error("No length")
@@ -23,10 +23,9 @@ end
 	Gets the length
 	@param length number
 ]=]
-function DebounceTimer:SetLength(length)
+function DebounceTimer:SetLength(length: number)
 	self._length = length or error("No length")
 end
-
 
 --[=[
 	Restarts the timer
@@ -39,7 +38,7 @@ end
 	Returns whether or not the timer is running.
 	@return boolean
 ]=]
-function DebounceTimer:IsRunning()
+function DebounceTimer:IsRunning(): boolean
 	return self._startTime ~= nil
 end
 
@@ -47,7 +46,7 @@ end
 	Returns the amount of time remaining in the timer.
 	@return number
 ]=]
-function DebounceTimer:GetTimeRemaining()
+function DebounceTimer:GetTimeRemaining(): number
 	if not self:IsRunning() then
 		return 0
 	end
@@ -59,7 +58,7 @@ end
 	Returns if the timer is done
 	@return boolean
 ]=]
-function DebounceTimer:IsDone()
+function DebounceTimer:IsDone(): boolean
 	if not self:IsRunning() then
 		return true
 	end

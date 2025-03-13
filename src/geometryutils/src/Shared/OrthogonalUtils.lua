@@ -10,8 +10,8 @@ local OrthogonalUtils = {}
 	@param cframe CFrame
 	return { Vector3 }
 ]=]
-function OrthogonalUtils.decomposeCFrameToVectors(cframe)
-	return  {
+function OrthogonalUtils.decomposeCFrameToVectors(cframe: CFrame): { Vector3 }
+	return {
 		cframe.LookVector, -- front
 		-cframe.LookVector,
 		cframe.RightVector,
@@ -28,7 +28,7 @@ end
 	@param unitVector Vector3
 	return Vector3?
 ]=]
-function OrthogonalUtils.getClosestVector(options, unitVector)
+function OrthogonalUtils.getClosestVector(options, unitVector: Vector3): Vector3?
 	local best = nil
 	local bestAngle = -math.huge
 	for _, option in pairs(options) do

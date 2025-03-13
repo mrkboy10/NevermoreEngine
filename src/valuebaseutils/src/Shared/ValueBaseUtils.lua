@@ -33,13 +33,25 @@ local VALUE_BASE_TYPE_LOOKUP = {
 	Vector3Value = "Vector3";
 }
 
+export type ValueBaseType =
+	"BoolValue"
+	| "NumberValue"
+	| "IntValue"
+	| "StringValue"
+	| "BrickColorValue"
+	| "CFrameValue"
+	| "Color3Value"
+	| "ObjectValue"
+	| "RayValue"
+	| "Vector3Value"
+
 --[=[
 	Returns true if the value is a ValueBase instance
 
 	@param instance Instance
 	@return boolean
 ]=]
-function ValueBaseUtils.isValueBase(instance)
+function ValueBaseUtils.isValueBase(instance: Instance): boolean
 	return typeof(instance) == "Instance" and instance:IsA("ValueBase")
 end
 
@@ -49,7 +61,7 @@ end
 	@param valueBaseClassName string
 	@return string?
 ]=]
-function ValueBaseUtils.getValueBaseType(valueBaseClassName)
+function ValueBaseUtils.getValueBaseType(valueBaseClassName: ValueBaseType): string?
 	return VALUE_BASE_TYPE_LOOKUP[valueBaseClassName]
 end
 
@@ -59,7 +71,7 @@ end
 	@param luaType string
 	@return string?
 ]=]
-function ValueBaseUtils.getClassNameFromType(luaType)
+function ValueBaseUtils.getClassNameFromType(luaType: string): string?
 	return TYPE_TO_CLASSNAME_LOOKUP[luaType]
 end
 
@@ -72,7 +84,12 @@ end
 	@param defaultValue any?
 	@return Instance
 ]=]
-function ValueBaseUtils.getOrCreateValue(parent, instanceType, name, defaultValue)
+function ValueBaseUtils.getOrCreateValue(
+	parent: Instance,
+	instanceType: ValueBaseType,
+	name: string,
+	defaultValue
+): Instance
 	assert(typeof(parent) == "Instance", "Bad argument 'parent'")
 	assert(type(instanceType) == "string", "Bad argument 'instanceType'")
 	assert(type(name) == "string", "Bad argument 'name'")
@@ -80,14 +97,22 @@ function ValueBaseUtils.getOrCreateValue(parent, instanceType, name, defaultValu
 	local foundChild = parent:FindFirstChild(name)
 	if foundChild then
 		if not foundChild:IsA(instanceType) then
-			warn(string.format("[ValueBaseUtils.getOrCreateValue] - Value of type %q of name %q is of type %q in %s instead", instanceType, name, foundChild.ClassName, foundChild:GetFullName()))
+			warn(
+				string.format(
+					"[ValueBaseUtils.getOrCreateValue] - Value of type %q of name %q is of type %q in %s instead",
+					instanceType,
+					name,
+					foundChild.ClassName,
+					foundChild:GetFullName()
+				)
+			)
 		end
 
 		return foundChild
 	else
 		local newChild = Instance.new(instanceType)
-		newChild.Name = name
-		newChild.Value = defaultValue
+		newChild.Name = name;
+		(newChild :: any).Value = defaultValue
 		newChild.Parent = parent
 
 		return newChild
@@ -103,7 +128,7 @@ end
 	@param value any
 	@return any
 ]=]
-function ValueBaseUtils.setValue(parent, instanceType, name, value)
+function ValueBaseUtils.setValue(parent: Instance, instanceType: ValueBaseType, name: string, value: any)
 	assert(typeof(parent) == "Instance", "Bad argument 'parent'")
 	assert(type(instanceType) == "string", "Bad argument 'instanceType'")
 	assert(type(name) == "string", "Bad argument 'name'")
@@ -111,14 +136,22 @@ function ValueBaseUtils.setValue(parent, instanceType, name, value)
 	local foundChild = parent:FindFirstChild(name)
 	if foundChild then
 		if not foundChild:IsA(instanceType) then
-			warn(string.format("[ValueBaseUtils.setValue] - Value of type %q of name %q is of type %q in %s instead", instanceType, name, foundChild.ClassName, foundChild:GetFullName()))
+			warn(
+				string.format(
+					"[ValueBaseUtils.setValue] - Value of type %q of name %q is of type %q in %s instead",
+					instanceType,
+					name,
+					foundChild.ClassName,
+					foundChild:GetFullName()
+				)
+			)
 		end
 
-		foundChild.Value = value
+		(foundChild :: any).Value = value
 	else
 		local newChild = Instance.new(instanceType)
-		newChild.Name = name
-		newChild.Value = value
+		newChild.Name = name;
+		(newChild :: any).Value = value
 		newChild.Parent = parent
 	end
 end
@@ -132,7 +165,7 @@ end
 	@param default any?
 	@return any
 ]=]
-function ValueBaseUtils.getValue(parent, instanceType, name, default)
+function ValueBaseUtils.getValue(parent: Instance, instanceType: ValueBaseType, name: string, default: any?)
 	assert(typeof(parent) == "Instance", "Bad argument 'parent'")
 	assert(type(instanceType) == "string", "Bad argument 'instanceType'")
 	assert(type(name) == "string", "Bad argument 'name'")
@@ -140,9 +173,17 @@ function ValueBaseUtils.getValue(parent, instanceType, name, default)
 	local foundChild = parent:FindFirstChild(name)
 	if foundChild then
 		if foundChild:IsA(instanceType) then
-			return foundChild.Value
+			return (foundChild :: any).Value
 		else
-			warn(string.format("[ValueBaseUtils.getValue] - Value of type %q of name %q is of type %q in %s instead", instanceType, name, foundChild.ClassName, foundChild:GetFullName()))
+			warn(
+				string.format(
+					"[ValueBaseUtils.getValue] - Value of type %q of name %q is of type %q in %s instead",
+					instanceType,
+					name,
+					foundChild.ClassName,
+					foundChild:GetFullName()
+				)
+			)
 			return nil
 		end
 	else
@@ -159,7 +200,7 @@ end
 	@return function
 	@return function
 ]=]
-function ValueBaseUtils.createGetSet(instanceType, name)
+function ValueBaseUtils.createGetSet(instanceType: ValueBaseType, name: string)
 	assert(type(instanceType) == "string", "Bad argument 'instanceType'")
 	assert(type(name) == "string", "Bad argument 'name'")
 

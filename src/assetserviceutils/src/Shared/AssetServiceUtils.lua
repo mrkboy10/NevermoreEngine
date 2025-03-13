@@ -17,7 +17,7 @@ local AssetServiceUtils = {}
 	@param packageAssetId number
 	@return Promise<table>
 ]=]
-function AssetServiceUtils.promiseAssetIdsForPackage(packageAssetId)
+function AssetServiceUtils.promiseAssetIdsForPackage(packageAssetId: number)
 	assert(type(packageAssetId) == "number", "Bad packageAssetId")
 
 	return Promise.spawn(function(resolve, reject)
@@ -41,7 +41,7 @@ end
 --[=[
 	Gets the places and their name for the current game.
 
-	@return Pages
+	@return Promise<Pages>
 ]=]
 function AssetServiceUtils.promiseGamePlaces()
 	return Promise.spawn(function(resolve, reject)
@@ -71,6 +71,11 @@ end
 	.Type string -- Item Type eg: "UserOutfit" or "Asset"
 	@within AssetServiceUtils
 ]=]
+export type BundleDetailsItem = {
+	Id: number,
+	Name: string,
+	Type: string,
+}
 
 --[=[
 	Details for the bundle
@@ -83,14 +88,21 @@ end
 	.Items { BundleDetailsItem } -- An array of ValueTable objects
 	@within AssetServiceUtils
 ]=]
+export type BundleDetails = {
+	Id: number,
+	Name: string,
+	Description: string,
+	BundleType: string,
+	Items: { BundleDetailsItem },
+}
 
 --[=[
 	Gets the bundle details
 
 	@param bundleId number
-	@return BundleDetails
+	@return Promise<BundleDetails>
 ]=]
-function AssetServiceUtils.promiseBundleDetails(bundleId)
+function AssetServiceUtils.promiseBundleDetails(bundleId: number)
 	assert(type(bundleId) == "number", "Bad bundleId")
 
 	return Promise.spawn(function(resolve, reject)

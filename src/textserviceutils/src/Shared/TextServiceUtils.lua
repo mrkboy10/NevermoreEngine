@@ -2,9 +2,9 @@
 	@class TextServiceUtils
 ]=]
 
-local TextService = game:GetService("TextService")
-
 local require = require(script.Parent.loader).load(script)
+
+local TextService = game:GetService("TextService")
 
 local Blend = require("Blend")
 local Promise = require("Promise")
@@ -22,9 +22,9 @@ local TextServiceUtils = {}
 	@param textLabel TextLabel
 	@param text string
 	@param maxWidth number
-	@return Promise<Vector2>
+	@return Vector2
 ]=]
-function TextServiceUtils.getSizeForLabel(textLabel, text, maxWidth)
+function TextServiceUtils.getSizeForLabel(textLabel: TextLabel, text: string, maxWidth: number?): Vector2
 	assert(typeof(textLabel) == "Instance", "Bad textLabel")
 	assert(type(text) == "string", "Bad text")
 
@@ -34,15 +34,13 @@ function TextServiceUtils.getSizeForLabel(textLabel, text, maxWidth)
 	return TextService:GetTextSize(text, textLabel.TextSize, textLabel.Font, Vector2.new(maxWidth, 1e6))
 end
 
-
-
 --[=[
 	Promises the text bounds for the given parameters
 
 	@param params GetTextBoundsParams
 	@return Promise<Vector2>
 ]=]
-function TextServiceUtils.promiseTextBounds(params)
+function TextServiceUtils.promiseTextBounds(params: GetTextBoundsParams)
 	assert(typeof(params) == "Instance" and params:IsA("GetTextBoundsParams"), "Bad params")
 
 	return Promise.spawn(function(resolve, reject)
@@ -58,6 +56,15 @@ function TextServiceUtils.promiseTextBounds(params)
 		return resolve(size)
 	end)
 end
+
+export type Props = {
+	Text: string | Instance,
+	TextSize: number,
+	Font: Enum.Font?,
+	FontFace: Font?,
+	MaxSize: Vector2?,
+	LineHeight: number?,
+}
 
 --[=[
 	Observes the current size for the current props. The properties
@@ -92,7 +99,7 @@ end
 	@param props table
 	@return Observable<Vector2> -- The text bounds reported
 ]=]
-function TextServiceUtils.observeSizeForLabelProps(props)
+function TextServiceUtils.observeSizeForLabelProps(props: Props)
 	assert(props.Text, "Bad props.Text")
 	assert(props.TextSize, "Bad props.TextSize")
 

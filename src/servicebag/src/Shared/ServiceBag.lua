@@ -99,7 +99,7 @@ end
 	@param serviceType ServiceType
 	@return any
 ]=]
-function ServiceBag:GetService(serviceType)
+function ServiceBag:GetService<T>(serviceType: T): T
 	if typeof(serviceType) == "Instance" then
 		serviceType = require(serviceType)
 	end

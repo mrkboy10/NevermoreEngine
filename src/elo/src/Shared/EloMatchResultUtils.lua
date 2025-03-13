@@ -8,13 +8,13 @@ local EloMatchResult = require("EloMatchResult")
 
 local EloMatchResultUtils = {}
 
-function EloMatchResultUtils.isEloMatchResult(matchResult)
+function EloMatchResultUtils.isEloMatchResult(matchResult: any): boolean
 	return matchResult == EloMatchResult.PLAYER_ONE_WIN
 		or matchResult == EloMatchResult.PLAYER_TWO_WIN
 		or matchResult == EloMatchResult.DRAW
 end
 
-function EloMatchResultUtils.isEloMatchResultList(eloMatchResultList)
+function EloMatchResultUtils.isEloMatchResultList(eloMatchResultList: {number }): boolean
 	if type(eloMatchResultList) ~= "table" then
 		return false
 	end

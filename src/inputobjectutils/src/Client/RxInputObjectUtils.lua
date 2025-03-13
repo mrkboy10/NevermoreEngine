@@ -12,7 +12,7 @@ local InputObjectUtils = require("InputObjectUtils")
 
 local RxInputObjectUtils = {}
 
-function RxInputObjectUtils.observeInputObjectEnded(initialInputObject)
+function RxInputObjectUtils.observeInputObjectEnded(initialInputObject: InputObject)
 	assert(initialInputObject, "Bad initialInputObject")
 
 	return Observable.new(function(sub)

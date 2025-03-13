@@ -1,3 +1,4 @@
+--!nonstrict
 --[=[
 	Promises, but without error handling as this screws with stack traces, using Roblox signals
 
@@ -24,7 +25,7 @@ Promise.__index = Promise
 	@param value any
 	@return boolean
 ]=]
-function Promise.isPromise(value)
+function Promise.isPromise(value: any): boolean
 	return type(value) == "table" and value.ClassName == "Promise"
 end
 
@@ -39,7 +40,7 @@ end
 	@param func (resolve: (...) -> (), reject: (...) -> ()) -> ()?
 	@return Promise<T>
 ]=]
-function Promise.new(func)
+function Promise.new(func: any?)
 	local self = setmetatable({
 		_pendingExecuteList = {};
 		_unconsumedException = true;

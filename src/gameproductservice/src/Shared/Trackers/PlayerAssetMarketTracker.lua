@@ -91,7 +91,7 @@ end
 	@param idOrKey string | number
 	@return Observable<()>
 ]=]
-function PlayerAssetMarketTracker:ObserveAssetPurchased(idOrKey)
+function PlayerAssetMarketTracker:ObserveAssetPurchased(idOrKey: string | number)
 	assert(type(idOrKey) == "number" or type(idOrKey) == "string", "Bad idOrKey")
 
 	return Observable.new(function(sub)
@@ -142,14 +142,18 @@ end
 	@param idOrKey number | string
 	@return Promise<boolean>
 ]=]
-function PlayerAssetMarketTracker:PromisePromptPurchase(idOrKey)
+function PlayerAssetMarketTracker:PromisePromptPurchase(idOrKey: string | number)
 	assert(type(idOrKey) == "number" or type(idOrKey) == "string", "Bad idOrKey")
 
 	local id = self._convertIds(idOrKey)
 	if not id then
-		return Promise.rejected(string.format("[PlayerAssetMarketTracker.PromisePromptPurchase] - No %s with key %q",
-			self._assetType,
-			tostring(idOrKey)))
+		return Promise.rejected(
+			string.format(
+				"[PlayerAssetMarketTracker.PromisePromptPurchase] - No %s with key %q",
+				self._assetType,
+				tostring(idOrKey)
+			)
+		)
 	end
 
 	return Promise.resolved()
@@ -167,18 +171,33 @@ function PlayerAssetMarketTracker:PromisePromptPurchase(idOrKey)
 
 			-- We reject here because there's no safe way to queue this
 			if self._promptsOpenCount.Value > 0 then
-				return Promise.rejected(string.format("[PlayerAssetMarketTracker] - Either already prompting user, or prompting is on cooldown. Will not prompt for %s", idOrKey))
+				return Promise.rejected(
+					string.format(
+						"[PlayerAssetMarketTracker] - Either already prompting user, or prompting is on cooldown. Will not prompt for %s",
+						tostring(idOrKey)
+					)
+				)
 			end
 
 			-- We reject here because there's no safe way to queue this
 			if self._pendingPurchasePromises[id] then
-				return Promise.rejected(string.format("[PlayerAssetMarketTracker] - Already prompting user. Will not prompt for %s", idOrKey))
+				return Promise.rejected(
+					string.format(
+						"[PlayerAssetMarketTracker] - Already prompting user. Will not prompt for %s",
+						tostring(idOrKey)
+					)
+				)
 			end
 
 			if self._pendingPromptOpenPromises[id] then
 				warn("[PlayerAssetMarketTracker] - Failure. Prompts open should be tracking this.")
 
-				return Promise.rejected(string.format("[PlayerAssetMarketTracker] - Already prompting user. Will not prompt for %s", idOrKey))
+				return Promise.rejected(
+					string.format(
+						"[PlayerAssetMarketTracker] - Already prompting user. Will not prompt for %s",
+						tostring(idOrKey)
+					)
+				)
 			end
 
 			do
@@ -236,7 +255,7 @@ end
 	@param idOrKey string | number
 	@return boolean
 ]=]
-function PlayerAssetMarketTracker:HasPurchasedThisSession(idOrKey)
+function PlayerAssetMarketTracker:HasPurchasedThisSession(idOrKey: string | number)
 	assert(type(idOrKey) == "number" or type(idOrKey) == "string", "idOrKey")
 
 	local id = self._convertIds(idOrKey)
@@ -267,7 +286,7 @@ end
 	@param id number
 	@param isPurchased boolean
 ]=]
-function PlayerAssetMarketTracker:HandlePurchaseEvent(id, isPurchased)
+function PlayerAssetMarketTracker:HandlePurchaseEvent(id: number, isPurchased: boolean)
 	assert(type(id) == "number", "Bad id")
 	assert(type(isPurchased) == "boolean", "Bad isPurchased")
 
@@ -285,7 +304,7 @@ end
 
 	@param id number
 ]=]
-function PlayerAssetMarketTracker:HandlePromptClosedEvent(id)
+function PlayerAssetMarketTracker:HandlePromptClosedEvent(id: number)
 	assert(type(id) == "number", "Bad id")
 
 	local promptOpenPromise = self._pendingPromptOpenPromises[id] or Promise.new()

@@ -29,7 +29,7 @@ local IGNORE_CONSTRAINT_SET = {
 	@return { BasePart }
 	@within getMechanismParts
 ]=]
-return function(originParts)
+return function(originParts: { BasePart }): { BasePart }
 	local startingTable
 	if type(originParts) == "table" then
 		assert(#originParts > 0, "Bad originParts")

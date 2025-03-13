@@ -1,3 +1,4 @@
+--!strict
 --[=[
 	Helper functions to observe parts of a Gui that are clipped or not
 

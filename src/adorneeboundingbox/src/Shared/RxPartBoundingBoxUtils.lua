@@ -8,7 +8,7 @@ local RxInstanceUtils = require("RxInstanceUtils")
 
 local RxPartBoundingBoxUtils = {}
 
-function RxPartBoundingBoxUtils.observePartCFrame(part)
+function RxPartBoundingBoxUtils.observePartCFrame(part: BasePart)
 	assert(typeof(part) == "Instance" and part:IsA("BasePart"), "Bad part")
 
 	return RxInstanceUtils.observeProperty(part, "CFrame")

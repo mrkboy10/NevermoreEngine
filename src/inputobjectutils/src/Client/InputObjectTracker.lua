@@ -43,7 +43,7 @@ local InputObjectTracker = setmetatable({}, BaseObject)
 InputObjectTracker.ClassName = "InputObjectTracker"
 InputObjectTracker.__index = InputObjectTracker
 
-function InputObjectTracker.new(initialInputObject)
+function InputObjectTracker.new(initialInputObject: InputObject)
 	assert(typeof(initialInputObject) == "Instance" and initialInputObject:IsA("InputObject"), "Bad initialInputObject")
 
 	local self = setmetatable(BaseObject.new(), InputObjectTracker)
@@ -94,7 +94,7 @@ end
 
 	@return Vector2
 ]=]
-function InputObjectTracker:GetInitialPosition()
+function InputObjectTracker:GetInitialPosition(): Vector2
 	return self._initialPosition
 end
 
@@ -103,28 +103,37 @@ end
 
 	@return Observable<Vector2>
 ]=]
-function InputObjectTracker:GetPosition()
+function InputObjectTracker:GetPosition(): Vector2
 	if self._isMouse then
 		return self._lastMousePosition
 	else
 		local position = self._initialInputObject.Position
-		return Vector2.new(position.x, position.y)
+		return Vector2.new(position.X, position.Y)
 	end
 end
 
 --[=[
 	Observes the input object ray
 
-	@param distance number? -- Optional number, defaults to 1000
-	@return Observable<Vector2>
+	@param rayDistance number? -- Optional number, defaults to 1000
+	@return Ray
 ]=]
-function InputObjectTracker:GetRay(distance)
-	distance = distance or 1000
+function InputObjectTracker:GetRay(rayDistance: number?): Ray
+	local distance = rayDistance or 1000
 
 	if self._isMouse then
-		return InputObjectRayUtils.cameraRayFromScreenPosition(self._lastMousePosition, distance, self._camera or Workspace.CurrentCamera)
+		return InputObjectRayUtils.cameraRayFromScreenPosition(
+			self._lastMousePosition,
+			distance,
+			self._camera or Workspace.CurrentCamera
+		)
 	else
-		return InputObjectRayUtils.cameraRayFromInputObject(self._initialInputObject, distance, Vector2.zero, self._camera or Workspace.CurrentCamera)
+		return InputObjectRayUtils.cameraRayFromInputObject(
+			self._initialInputObject,
+			distance,
+			Vector2.zero,
+			self._camera or Workspace.CurrentCamera
+		)
 	end
 end
 
@@ -133,7 +142,7 @@ end
 
 	@param camera Camera
 ]=]
-function InputObjectTracker:SetCamera(camera)
+function InputObjectTracker:SetCamera(camera: Camera)
 	assert(typeof(camera) == "Instance", "Bad camera")
 
 	self._camera = camera

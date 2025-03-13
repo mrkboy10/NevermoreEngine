@@ -4,8 +4,6 @@
 	@class DuckTypeUtils
 ]=]
 
-local require = require(script.Parent.loader).load(script)
-
 local DuckTypeUtils = {}
 
 --[=[

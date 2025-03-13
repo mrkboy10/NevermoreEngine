@@ -34,7 +34,7 @@ local NumberToInputKeyUtils = {}
 	@param number number
 	@return { Enum.KeyCode }
 ]=]
-function NumberToInputKeyUtils.getInputsForNumber(number: number): Enum.KeyCode?
+function NumberToInputKeyUtils.getInputsForNumber(number: number): { Enum.KeyCode }?
 	assert(type(number) == "number", "Bad number")
 
 	return NUMBERS[number]

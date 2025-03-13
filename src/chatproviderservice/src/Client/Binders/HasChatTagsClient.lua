@@ -16,7 +16,7 @@ local HasChatTagsClient = setmetatable({}, HasChatTagsBase)
 HasChatTagsClient.ClassName = "HasChatTagsClient"
 HasChatTagsClient.__index = HasChatTagsClient
 
-function HasChatTagsClient.new(player, serviceBag)
+function HasChatTagsClient.new(player: Player, serviceBag)
 	local self = setmetatable(HasChatTagsBase.new(player), HasChatTagsClient)
 
 	self._serviceBag = assert(serviceBag, "No serviceBag")
@@ -30,13 +30,13 @@ function HasChatTagsClient:GetChatTagBinder()
 	return self._chatTagBinder
 end
 
-function HasChatTagsClient:GetAsRichText()
+function HasChatTagsClient:GetAsRichText(): string
 	local lastChatTags = self._lastChatTags.Value
 	if not (lastChatTags and #lastChatTags > 0) then
 		return nil
 	end
 
-	local output = "<b>"
+	local output: string = "<b>"
 	for index, tagData in pairs(lastChatTags) do
 		output = output .. string.format("<font color='%s'>", Color3Utils.toWebHexString(tagData.TagColor))
 

@@ -57,16 +57,16 @@ end
 	@param color3 Color3
 	@return BodyColorsData
 ]=]
-function BodyColorsDataUtils.fromUniformColor(color3)
+function BodyColorsDataUtils.fromUniformColor(color3: Color3)
 	assert(typeof(color3) == "Color3", "Bad color3")
 
 	return BodyColorsDataUtils.createBodyColorsData({
-		headColor = color3;
-		leftArmColor = color3;
-		leftLegColor = color3;
-		rightArmColor = color3;
-		rightLegColor = color3;
-		torsoColor = color3;
+		headColor = color3,
+		leftArmColor = color3,
+		leftLegColor = color3,
+		rightArmColor = color3,
+		rightLegColor = color3,
+		torsoColor = color3,
 	})
 end
 
@@ -80,12 +80,12 @@ function BodyColorsDataUtils.fromBodyColors(bodyColors)
 	assert(typeof(bodyColors) == "Instance" and bodyColors:IsA("BodyColors"), "Bad bodyColors")
 
 	return BodyColorsDataUtils.createBodyColorsData({
-		headColor = bodyColors.HeadColor3;
-		leftArmColor = bodyColors.LeftArmColor3;
-		leftLegColor = bodyColors.LeftLegColor3;
-		rightArmColor = bodyColors.RightArmColor3;
-		rightLegColor = bodyColors.RightLegColor3;
-		torsoColor = bodyColors.TorsoColor3;
+		headColor = bodyColors.HeadColor3,
+		leftArmColor = bodyColors.LeftArmColor3,
+		leftLegColor = bodyColors.LeftLegColor3,
+		rightArmColor = bodyColors.RightArmColor3,
+		rightLegColor = bodyColors.RightLegColor3,
+		torsoColor = bodyColors.TorsoColor3,
 	})
 end
 
@@ -113,12 +113,18 @@ function BodyColorsDataUtils.toDataStoreSafeBodyColorsData(bodyColorsData)
 	assert(BodyColorsDataUtils.isBodyColorsData(bodyColorsData), "Bad bodyColorsData")
 
 	return {
-		headColor = bodyColorsData.headColor and Color3SerializationUtils.serialize(bodyColorsData.headColor) or nil;
-		leftArmColor = bodyColorsData.leftArmColor and Color3SerializationUtils.serialize(bodyColorsData.leftArmColor) or nil;
-		leftLegColor = bodyColorsData.leftLegColor and Color3SerializationUtils.serialize(bodyColorsData.leftLegColor) or nil;
-		rightArmColor = bodyColorsData.rightArmColor and Color3SerializationUtils.serialize(bodyColorsData.rightArmColor) or nil;
-		rightLegColor = bodyColorsData.rightLegColor and Color3SerializationUtils.serialize(bodyColorsData.rightLegColor) or nil;
-		torsoColor = bodyColorsData.torsoColor and Color3SerializationUtils.serialize(bodyColorsData.torsoColor) or nil;
+		headColor = bodyColorsData.headColor and Color3SerializationUtils.serialize(bodyColorsData.headColor) or nil,
+		leftArmColor = bodyColorsData.leftArmColor and Color3SerializationUtils.serialize(bodyColorsData.leftArmColor)
+			or nil,
+		leftLegColor = bodyColorsData.leftLegColor and Color3SerializationUtils.serialize(bodyColorsData.leftLegColor)
+			or nil,
+		rightArmColor = bodyColorsData.rightArmColor and Color3SerializationUtils.serialize(
+			bodyColorsData.rightArmColor
+		) or nil,
+		rightLegColor = bodyColorsData.rightLegColor and Color3SerializationUtils.serialize(
+			bodyColorsData.rightLegColor
+		) or nil,
+		torsoColor = bodyColorsData.torsoColor and Color3SerializationUtils.serialize(bodyColorsData.torsoColor) or nil,
 	}
 end
 
@@ -126,12 +132,12 @@ function BodyColorsDataUtils.fromDataStoreSafeBodyColorsData(data)
 	assert(BodyColorsDataUtils.isDataStoreSafeBodyColorsData(data), "Bad dataStoreSafeBodyColorsData")
 
 	return BodyColorsDataUtils.createBodyColorsData({
-		headColor = data.headColor and Color3SerializationUtils.deserialize(data.headColor) or nil;
-		leftArmColor = data.leftArmColor and Color3SerializationUtils.deserialize(data.leftArmColor) or nil;
-		leftLegColor = data.leftLegColor and Color3SerializationUtils.deserialize(data.leftLegColor) or nil;
-		rightArmColor = data.rightArmColor and Color3SerializationUtils.deserialize(data.rightArmColor) or nil;
-		rightLegColor = data.rightLegColor and Color3SerializationUtils.deserialize(data.rightLegColor) or nil;
-		torsoColor = data.torsoColor and Color3SerializationUtils.deserialize(data.torsoColor) or nil;
+		headColor = data.headColor and Color3SerializationUtils.deserialize(data.headColor) or nil,
+		leftArmColor = data.leftArmColor and Color3SerializationUtils.deserialize(data.leftArmColor) or nil,
+		leftLegColor = data.leftLegColor and Color3SerializationUtils.deserialize(data.leftLegColor) or nil,
+		rightArmColor = data.rightArmColor and Color3SerializationUtils.deserialize(data.rightArmColor) or nil,
+		rightLegColor = data.rightLegColor and Color3SerializationUtils.deserialize(data.rightLegColor) or nil,
+		torsoColor = data.torsoColor and Color3SerializationUtils.deserialize(data.torsoColor) or nil,
 	})
 end
 
@@ -141,16 +147,19 @@ end
 	@param humanoidDescription HumanoidDescription
 	@return BodyColorsData
 ]=]
-function BodyColorsDataUtils.fromHumanoidDescription(humanoidDescription)
-	assert(typeof(humanoidDescription) == "Instance" and humanoidDescription:IsA("HumanoidDescription"), "Bad humanoidDescription")
+function BodyColorsDataUtils.fromHumanoidDescription(humanoidDescription: HumanoidDescription)
+	assert(
+		typeof(humanoidDescription) == "Instance" and humanoidDescription:IsA("HumanoidDescription"),
+		"Bad humanoidDescription"
+	)
 
 	return BodyColorsDataUtils.createBodyColorsData({
-		headColor = humanoidDescription.HeadColor;
-		leftArmColor = humanoidDescription.LeftArmColor;
-		leftLegColor = humanoidDescription.LeftLegColor;
-		rightArmColor = humanoidDescription.RightArmColor;
-		rightLegColor = humanoidDescription.RightLegColor;
-		torsoColor = humanoidDescription.TorsoColor;
+		headColor = humanoidDescription.HeadColor,
+		leftArmColor = humanoidDescription.LeftArmColor,
+		leftLegColor = humanoidDescription.LeftLegColor,
+		rightArmColor = humanoidDescription.RightArmColor,
+		rightLegColor = humanoidDescription.RightLegColor,
+		torsoColor = humanoidDescription.TorsoColor,
 	})
 end
 
@@ -191,7 +200,7 @@ function BodyColorsDataUtils.isUniformColor(bodyColorsData)
 	return true
 end
 
-function BodyColorsDataUtils.getUniformColor(bodyColorsData)
+function BodyColorsDataUtils.getUniformColor(bodyColorsData): Color3?
 	if BodyColorsDataUtils.isUniformColor(bodyColorsData) then
 		return bodyColorsData.headColor
 	end

@@ -14,7 +14,7 @@ local TieInterface = {}
 TieInterface.ClassName = "TieInterface"
 TieInterface.__index = TieInterface
 
-function TieInterface.new(definition, implParent, adornee, interfaceTieRealm)
+function TieInterface.new(definition, implParent: Instance?, adornee: Instance?, interfaceTieRealm)
 	local self = setmetatable({}, TieInterface)
 
 	assert(implParent or adornee, "ImplParent or adornee required")
@@ -33,7 +33,7 @@ end
 
 	@return boolean
 ]=]
-function TieInterface:IsImplemented()
+function TieInterface:IsImplemented(): boolean
 	local implParent = rawget(self, "_implParent")
 	local adornee = rawget(self, "_adornee")
 	local definition = rawget(self, "_definition")
@@ -61,7 +61,7 @@ end
 
 	@return Instance | nil
 ]=]
-function TieInterface:GetTieAdornee()
+function TieInterface:GetTieAdornee(): Instance?
 	local adornee = rawget(self, "_adornee")
 	if adornee then
 		return adornee

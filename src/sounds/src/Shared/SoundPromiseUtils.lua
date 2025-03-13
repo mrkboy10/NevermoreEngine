@@ -1,3 +1,4 @@
+--!strict
 --[=[
 	Utility functions involving sounds and their state
 	@class SoundPromiseUtils
@@ -17,7 +18,7 @@ local SoundPromiseUtils = {}
 	@param sound Sound
 	@return Promise
 ]=]
-function SoundPromiseUtils.promiseLoaded(sound)
+function SoundPromiseUtils.promiseLoaded(sound: Sound)
 	if sound.IsLoaded then
 		return Promise.resolved()
 	end
@@ -44,7 +45,7 @@ function SoundPromiseUtils.promiseLoaded(sound)
 	return promise
 end
 
-function SoundPromiseUtils.promisePlayed(sound)
+function SoundPromiseUtils.promisePlayed(sound: Sound)
 	return SoundPromiseUtils.promiseLoaded(sound):Then(function()
 		return PromiseUtils.delayed(sound.TimeLength)
 	end)
@@ -66,7 +67,7 @@ end
 	@param sounds { Sound }
 	@return Promise
 ]=]
-function SoundPromiseUtils.promiseAllSoundsLoaded(sounds)
+function SoundPromiseUtils.promiseAllSoundsLoaded(sounds: { Sound })
 	local promises = {}
 	for _, sound in pairs(sounds) do
 		table.insert(promises, SoundPromiseUtils.promiseLoaded(sound))

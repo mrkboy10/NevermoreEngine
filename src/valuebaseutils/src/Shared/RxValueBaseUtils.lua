@@ -18,18 +18,16 @@ local RxValueBaseUtils = {}
 	@param predicate callback -- Optional callback
 	@return Observable<Brio<any>>
 ]=]
-function RxValueBaseUtils.observeBrio(parent, className, name, predicate)
+function RxValueBaseUtils.observeBrio(parent: Instance, className: string, name: string, predicate: (() -> boolean)?)
 	assert(typeof(parent) == "Instance", "Bad parent")
 	assert(type(className) == "string", "Bad className")
 	assert(type(name) == "string", "Bad naem")
 
 	return RxInstanceUtils.observeLastNamedChildBrio(parent, className, name)
 		:Pipe({
-			RxBrioUtils.switchMapBrio(function(valueObject)
-				return RxValueBaseUtils.observeValue(valueObject)
-			end),
+			RxBrioUtils.switchMapBrio(RxValueBaseUtils.observeValue),
 			RxBrioUtils.onlyLastBrioSurvives(),
-			predicate and RxBrioUtils.where(predicate) or nil;
+			if predicate then RxBrioUtils.where(predicate) else nil :: never;
 		})
 end
 

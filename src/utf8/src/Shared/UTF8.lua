@@ -20,7 +20,7 @@ function UTF8.upper(str: string): string
 		if UPPER_MAP[chr] then
 			chr = UPPER_MAP[chr]
 		end
-		newStr = newStr .. chr
+		newStr ..= chr
 	end
 	return newStr
 end
@@ -35,11 +35,11 @@ function UTF8.lower(str: string): string
 	str = string.lower(str)
 	local newStr = ""
 	for start, stop in utf8.graphemes(str) do
-		local chr = string.sub(str, start, stop)
+		local chr: string = string.sub(str, start, stop)
 		if LOWER_MAP[chr] then
 			chr = LOWER_MAP[chr]
 		end
-		newStr = newStr .. chr
+		newStr ..= chr
 	end
 	return newStr
 end
@@ -49,7 +49,7 @@ end
 	@prop UPPER_MAP { [string]: string }
 	@within UTF8
 ]=]
-UTF8.UPPER_MAP = {
+local UPPER_MAP: { [string]: string } = {
 	["à"] = "À",
 	["á"] = "Á",
 	["â"] = "Â",
@@ -160,9 +160,12 @@ UTF8.UPPER_MAP = {
 	@prop LOWER_MAP { [string]: string }
 	@within UTF8
 ]=]
-UTF8.LOWER_MAP = {}
+local LOWER_MAP: { [string]: string } = {}
 for key, val in pairs(UTF8.UPPER_MAP) do
-	UTF8.LOWER_MAP[val] = key
+	LOWER_MAP[val] = key
 end
+
+UTF8.UPPER_MAP = table.freeze(UPPER_MAP)
+UTF8.LOWER_MAP = table.freeze(LOWER_MAP)
 
 return UTF8

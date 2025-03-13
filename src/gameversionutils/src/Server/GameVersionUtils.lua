@@ -1,3 +1,4 @@
+--!strict
 --[=[
 	Utility functions to automatically detect the version a game is running at
 	@class GameVersionUtils
@@ -8,10 +9,15 @@ local RunService = game:GetService("RunService")
 local GameVersionUtils = {}
 
 --[=[
+	The server type
+]=]
+export type ServerType = "standard" | "vip" | "reserved"
+
+--[=[
 	Gets the game build
 	@return string
 ]=]
-function GameVersionUtils.getBuild()
+function GameVersionUtils.getBuild(): string
 	if RunService:IsStudio() then
 		return "studio"
 	else
@@ -23,7 +29,7 @@ end
 	Gets the game build with a server type specified for debugging
 	@return string
 ]=]
-function GameVersionUtils.getBuildWithServerType()
+function GameVersionUtils.getBuildWithServerType(): string
 	return GameVersionUtils.getBuild() .. "-" .. GameVersionUtils.getServerType()
 end
 
@@ -31,7 +37,7 @@ end
 	Gets a string label for the current server type
 	@return string
 ]=]
-function GameVersionUtils.getServerType()
+function GameVersionUtils.getServerType(): ServerType
 	if game.PrivateServerId ~= "" then
 		if game.PrivateServerOwnerId ~= 0 then
 			return "vip"
@@ -47,7 +53,7 @@ end
 	Returns true if we're a VIP server
 	@return boolean
 ]=]
-function GameVersionUtils.isVIPServer()
+function GameVersionUtils.isVIPServer(): boolean
 	return game.PrivateServerId ~= "" and game.PrivateServerOwnerId ~= 0
 end
 

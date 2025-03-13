@@ -1,3 +1,4 @@
+--!strict
 --[=[
 	Bounding box utilties. Prefer model:GetBoundingBox() in most cases. However, sometimes grouping isn't possible.
 	@class BoundingBoxUtils
@@ -13,7 +14,7 @@ local BoundingBoxUtils = {}
 	@return Vector3 -- size
 	@return Vector3 -- position
 ]=]
-function BoundingBoxUtils.getPartsBoundingBox(parts, relativeTo)
+function BoundingBoxUtils.getPartsBoundingBox(parts: { BasePart }, relativeTo: CFrame?): (Vector3, Vector3)
 	return BoundingBoxUtils.getBoundingBox(parts, relativeTo)
 end
 
@@ -28,14 +29,15 @@ end
 	@return Vector3 -- Clamped point
 	@return Vector3 -- Center of bounding box
 ]=]
-function BoundingBoxUtils.clampPointToBoundingBox(cframe, size, point)
+function BoundingBoxUtils.clampPointToBoundingBox(cframe: CFrame, size: Vector3, point: Vector3): (Vector3, Vector3)
 	local transform = cframe:PointToObjectSpace(point) -- transform into local space
 	local halfSize = size * 0.5
 	return cframe * Vector3.new( -- Clamp & transform into world space
-		math.clamp(transform.x, -halfSize.x, halfSize.x),
-		math.clamp(transform.y, -halfSize.y, halfSize.y),
-		math.clamp(transform.z, -halfSize.z, halfSize.z)
-	), cframe.Position
+		math.clamp(transform.X, -halfSize.X, halfSize.X),
+		math.clamp(transform.Y, -halfSize.Y, halfSize.Y),
+		math.clamp(transform.Z, -halfSize.Z, halfSize.Z)
+	),
+		cframe.Position
 end
 
 --[=[
@@ -46,12 +48,12 @@ end
 	@param point Vector3 -- Point to transform
 	@return Vector3
 ]=]
-function BoundingBoxUtils.pushPointToLieOnBoundingBox(cframe, size, point)
+function BoundingBoxUtils.pushPointToLieOnBoundingBox(cframe: CFrame, size: Vector3, point: Vector3): Vector3
 	local transform = cframe:PointToObjectSpace(point) -- transform into local space
 	local halfSize = size * 0.5
-	local x = transform.x < 0 and -halfSize.x or halfSize.x
-	local y = transform.y < 0 and -halfSize.y or halfSize.y
-	local z = transform.z < 0 and -halfSize.z or halfSize.z
+	local x = transform.X < 0 and -halfSize.X or halfSize.X
+	local y = transform.Y < 0 and -halfSize.Y or halfSize.Y
+	local z = transform.Z < 0 and -halfSize.Z or halfSize.Z
 	return cframe * Vector3.new(x, y, z), cframe.Position
 end
 
@@ -63,7 +65,7 @@ end
 	@return Vector3? -- size
 	@return Vector3? -- position
 ]=]
-function BoundingBoxUtils.getChildrenBoundingBox(parent, relativeTo)
+function BoundingBoxUtils.getChildrenBoundingBox(parent: Instance, relativeTo: CFrame?): (Vector3?, Vector3?)
 	local parts = {}
 	for _, item in pairs(parent:GetDescendants()) do
 		if item:IsA("BasePart") then
@@ -84,20 +86,19 @@ end
 	@param cframe CFrame
 	@param size Vector3
 ]=]
-function BoundingBoxUtils.axisAlignedBoxSize(cframe, size)
-	local inv = cframe:inverse()
+function BoundingBoxUtils.axisAlignedBoxSize(cframe: CFrame, size: Vector3): Vector3
+	local inv = cframe:Inverse()
 
-	local wx = size*inv.XVector
-	local wy = size*inv.YVector
-	local wz = size*inv.ZVector
+	local wx = size * inv.XVector
+	local wy = size * inv.YVector
+	local wz = size * inv.ZVector
 
 	return Vector3.new(
-		math.abs(wx.x) + math.abs(wx.y) + math.abs(wx.z),
-		math.abs(wy.x) + math.abs(wy.y) + math.abs(wy.z),
-		math.abs(wz.x) + math.abs(wz.y) + math.abs(wz.z)
+		math.abs(wx.X) + math.abs(wx.Y) + math.abs(wx.Z),
+		math.abs(wy.X) + math.abs(wy.Y) + math.abs(wy.Z),
+		math.abs(wz.X) + math.abs(wz.Y) + math.abs(wz.Z)
 	)
 end
-
 
 --[=[
 	Gets a boundingBox for the given data.
@@ -109,14 +110,14 @@ end
 	@return Vector3 -- size
 	@return Vector3 -- position
 ]=]
-function BoundingBoxUtils.getBoundingBox(data, relativeTo: CFrame?)
-	relativeTo = relativeTo or CFrame.new()
+function BoundingBoxUtils.getBoundingBox(data, relativeTo: CFrame?): (Vector3, Vector3)
+	local relative = relativeTo or CFrame.new()
 
 	local minx, miny, minz = math.huge, math.huge, math.huge
 	local maxx, maxy, maxz = -math.huge, -math.huge, -math.huge
 
 	for _, obj in pairs(data) do
-		local cframe = relativeTo:toObjectSpace(obj.CFrame)
+		local cframe = relative:ToObjectSpace(obj.CFrame)
 		local size = obj.Size
 		local sx, sy, sz = size.X, size.Y, size.Z
 
@@ -148,8 +149,8 @@ function BoundingBoxUtils.getBoundingBox(data, relativeTo: CFrame?)
 		end
 	end
 
-	local size = Vector3.new(maxx-minx, maxy-miny, maxz-minz)
-	local position = Vector3.new((maxx + minx)/2, (maxy+miny)/2, (maxz+minz)/2)
+	local size = Vector3.new(maxx - minx, maxy - miny, maxz - minz)
+	local position = Vector3.new((maxx + minx) / 2, (maxy + miny) / 2, (maxz + minz) / 2)
 	return size, position
 end
 
@@ -163,9 +164,9 @@ end
 ]=]
 function BoundingBoxUtils.inBoundingBox(cframe: CFrame, size: Vector3, testPosition: Vector3): boolean
 	local relative = cframe:PointToObjectSpace(testPosition)
-	local hsx, hsy, hsz = size.X/2, size.Y/2, size.Z/2
+	local hsx, hsy, hsz = size.X / 2, size.Y / 2, size.Z / 2
 
-	local rx, ry, rz = relative.x, relative.y, relative.z
+	local rx, ry, rz = relative.X, relative.Y, relative.Z
 	return rx >= -hsx
 		and rx <= hsx
 		and ry >= -hsy
@@ -182,12 +183,12 @@ end
 	@param testPosition Vector3
 	@return boolean
 ]=]
-function BoundingBoxUtils.inCylinderBoundingBox(cframe, size, testPosition)
+function BoundingBoxUtils.inCylinderBoundingBox(cframe: CFrame, size: Vector3, testPosition: Vector3): boolean
 	local relative = cframe:PointToObjectSpace(testPosition)
-	local half_height = size.x/2
-	local radius = math.min(size.y, size.z)/2
+	local half_height = size.X/2
+	local radius = math.min(size.Y, size.Z)/2
 
-	local rx, ry, rz = relative.x, relative.y, relative.z
+	local rx, ry, rz = relative.X, relative.Y, relative.Z
 	local dist = ry*ry + rz*rz
 	return math.abs(rx) <= half_height
 		and dist <= (radius*radius)
@@ -201,11 +202,11 @@ end
 	@param testPosition Vector3
 	@return boolean
 ]=]
-function BoundingBoxUtils.inBallBoundingBox(cframe, size, testPosition)
+function BoundingBoxUtils.inBallBoundingBox(cframe: CFrame, size: Vector3, testPosition: Vector3): boolean
 	local relative = cframe:PointToObjectSpace(testPosition)
-	local radius = math.min(size.x, size.y, size.z)/2
+	local radius = math.min(size.X, size.Y, size.Z)/2
 
-	local rx, ry, rz = relative.x, relative.y, relative.z
+	local rx, ry, rz = relative.X, relative.Y, relative.Z
 	local dist = rx*rx + ry*ry + rz*rz
 	return dist <= radius*radius
 end

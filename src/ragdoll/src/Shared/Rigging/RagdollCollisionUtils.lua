@@ -86,7 +86,7 @@ local R6_NO_COLLIDES = {
 	{"HumanoidRootPart", "Left Arm"},
 }
 
-function RagdollCollisionUtils.getCollisionData(rigType)
+function RagdollCollisionUtils.getCollisionData(rigType: Enum.HumanoidRigType)
 	if rigType == Enum.HumanoidRigType.R15 then
 		return R15_NO_COLLIDES
 	elseif rigType == Enum.HumanoidRigType.R6 then
@@ -96,7 +96,7 @@ function RagdollCollisionUtils.getCollisionData(rigType)
 	end
 end
 
-function RagdollCollisionUtils.preventCollisionAmongOthers(character, part)
+function RagdollCollisionUtils.preventCollisionAmongOthers(character: Model, part: BasePart)
 	local topMaid = Maid.new()
 
 	for _, partName in pairs(R15_PARTS) do
@@ -120,7 +120,7 @@ function RagdollCollisionUtils.preventCollisionAmongOthers(character, part)
 	return topMaid
 end
 
-function RagdollCollisionUtils.ensureNoCollides(character, rigType)
+function RagdollCollisionUtils.ensureNoCollides(character: Model, rigType: Enum.HumanoidRigType)
 	assert(typeof(character) == "Instance" and character:IsA("Model"), "Bad character")
 	assert(EnumUtils.isOfType(Enum.HumanoidRigType, rigType), "Bad rigType")
 

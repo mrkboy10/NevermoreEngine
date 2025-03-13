@@ -51,11 +51,11 @@ ButtonHighlightModel.__index = ButtonHighlightModel
 
 --[=[
 	A model that dictates the current state of a button.
-	@param button? GuiBase
+	@param button? GuiObject
 	@param onUpdate function?
 	@return ButtonHighlightModel
 ]=]
-function ButtonHighlightModel.new(button, onUpdate)
+function ButtonHighlightModel.new(button: GuiObject?, onUpdate)
 	local self = setmetatable(BaseObject.new(), ButtonHighlightModel)
 
 	self._onUpdate = onUpdate
@@ -75,28 +75,28 @@ function ButtonHighlightModel.new(button, onUpdate)
 	self._isMouseOverScrollingCheck = self._maid:Add(ValueObject.new(false, "boolean"))
 	self._lastMousePositionForScrollingCheck = self._maid:Add(ValueObject.new(nil))
 
---[=[
+	--[=[
 	@prop InteractionEnabledChanged Signal<boolean>
 	@readonly
 	@within ButtonHighlightModel
 ]=]
 	self.InteractionEnabledChanged = self._interactionEnabled.Changed
 
---[=[
+	--[=[
 	@prop IsSelectedChanged Signal<boolean>
 	@readonly
 	@within ButtonHighlightModel
 ]=]
 	self.IsSelectedChanged = self._isSelected.Changed
 
---[=[
+	--[=[
 	@prop IsMouseOrTouchOverChanged Signal<boolean>
 	@readonly
 	@within ButtonHighlightModel
 ]=]
 	self.IsMouseOrTouchOverChanged = self._isMouseOrTouchOver.Changed
 
---[=[
+	--[=[
 	@prop IsHighlightedChanged Signal<boolean>
 	@readonly
 	@within ButtonHighlightModel
@@ -105,7 +105,7 @@ function ButtonHighlightModel.new(button, onUpdate)
 
 	self._isPressed = self._maid:Add(ValueObject.new(false))
 
---[=[
+	--[=[
 	@prop IsPressedChanged Signal<boolean>
 	@readonly
 	@within ButtonHighlightModel
@@ -152,7 +152,7 @@ end
 	Sets the button for the highlight model.
 	@param button
 ]=]
-function ButtonHighlightModel:SetButton(button: Instance)
+function ButtonHighlightModel:SetButton(button: GuiObject?)
 	assert(typeof(button) == "Instance" or button == nil, "Bad button")
 
 	local maid = Maid.new()
@@ -198,20 +198,22 @@ function ButtonHighlightModel:SetButton(button: Instance)
 		end))
 
 		-- Track until something indicates removal
-		maid:GiveTask(self._isMouseOverBasedUponMouseMovement:ObserveBrio(function(mouseOver)
-			return mouseOver
-		end):Subscribe(function(brio)
-			if brio:IsDead() then
-				return
-			end
+		maid:GiveTask(self._isMouseOverBasedUponMouseMovement
+			:ObserveBrio(function(mouseOver)
+				return mouseOver
+			end)
+			:Subscribe(function(brio)
+				if brio:IsDead() then
+					return
+				end
 
-			self:_trackIfButtonMovedOutFromMouse(brio:ToMaid(), button)
-		end))
+				self:_trackIfButtonMovedOutFromMouse(brio:ToMaid(), button)
+			end))
 
 		-- We have to track as long as the mouse hasn't moved
 		maid:GiveTask(Rx.combineLatest({
-			isMouseOverFromInput = self._isMouseOverBasedUponMouseMovement:Observe();
-			isMouseOverScrollingCheck = self._isMouseOverScrollingCheck:Observe();
+			isMouseOverFromInput = self._isMouseOverBasedUponMouseMovement:Observe(),
+			isMouseOverScrollingCheck = self._isMouseOverScrollingCheck:Observe(),
 		}):Subscribe(function(state)
 			self._isMouseOver.Value = state.isMouseOverFromInput and state.isMouseOverScrollingCheck
 		end))
@@ -226,7 +228,7 @@ function ButtonHighlightModel:SetButton(button: Instance)
 	end
 end
 
-function ButtonHighlightModel:_trackIfButtonMovedOutFromMouse(maid, button)
+function ButtonHighlightModel:_trackIfButtonMovedOutFromMouse(maid, button: GuiObject)
 	maid:GiveTask(button.InputChanged:Connect(function(inputObject)
 		if inputObject.UserInputType == Enum.UserInputType.MouseMovement then
 			self._lastMousePositionForScrollingCheck.Value = inputObject.Position
@@ -234,41 +236,42 @@ function ButtonHighlightModel:_trackIfButtonMovedOutFromMouse(maid, button)
 	end))
 
 	maid:GiveTask(Rx.combineLatest({
-		mousePosition = self._lastMousePositionForScrollingCheck:Observe();
-		absolutePosition = RxInstanceUtils.observeProperty(button, "AbsolutePosition");
-		absoluteSize = RxInstanceUtils.observeProperty(button, "AbsoluteSize");
-	}):Pipe({
-		Rx.map(function(state)
-			if not state.mousePosition then
-				return true
-			end
+		mousePosition = self._lastMousePositionForScrollingCheck:Observe(),
+		absolutePosition = RxInstanceUtils.observeProperty(button, "AbsolutePosition"),
+		absoluteSize = RxInstanceUtils.observeProperty(button, "AbsoluteSize"),
+	})
+		:Pipe({
+			Rx.map(function(state)
+				if not state.mousePosition then
+					return true
+				end
 
-			local area = Rect.new(state.absolutePosition, state.absolutePosition + state.absoluteSize)
+				local area = Rect.new(state.absolutePosition, state.absolutePosition + state.absoluteSize)
 
-			if RectUtils.contains(area, Vector2.new(state.mousePosition.x, state.mousePosition.y)) then
-				return true
-			end
+				if RectUtils.contains(area, Vector2.new(state.mousePosition.x, state.mousePosition.y)) then
+					return true
+				end
 
-			-- TODO: check rounded corners and rotated guis
+				-- TODO: check rounded corners and rotated guis
 
-			return false
-		end)
-	}):Subscribe(function(state)
-		self._isMouseOverScrollingCheck.Value = state
-	end))
+				return false
+			end),
+		})
+		:Subscribe(function(state)
+			self._isMouseOverScrollingCheck.Value = state
+		end))
 
 	maid:GiveTask(function()
 		self._isMouseOverScrollingCheck.Value = false
 		self._lastMousePositionForScrollingCheck.Value = nil
 	end)
-
 end
 
 --[=[
 	Gets if the button is pressed
 	@return boolean
 ]=]
-function ButtonHighlightModel:IsPressed()
+function ButtonHighlightModel:IsPressed(): boolean
 	return self._isPressed.Value
 end
 
@@ -283,16 +286,18 @@ end
 --[=[
 	Observes how pressed down the button is
 
-	@param acceleration number | nil
+	@param acceleration number?
 	@return Observable<number>
 ]=]
-function ButtonHighlightModel:ObservePercentPressed(acceleration)
-	return Blend.AccelTween(Blend.toPropertyObservable(self._isPressed)
-		:Pipe({
+function ButtonHighlightModel:ObservePercentPressed(acceleration: number?)
+	return Blend.AccelTween(
+		Blend.toPropertyObservable(self._isPressed):Pipe({
 			Rx.map(function(value)
 				return value and 1 or 0
-			end);
-		}), acceleration or 200)
+			end),
+		}),
+		acceleration or 200
+	)
 end
 
 --[=[
@@ -300,12 +305,11 @@ end
 	@return Observable<number>
 ]=]
 function ButtonHighlightModel:ObservePercentPressedTarget()
-	return self._isPressed:Observe()
-		:Pipe({
-			Rx.map(function(value)
-				return value and 1 or 0
-			end);
-		})
+	return self._isPressed:Observe():Pipe({
+		Rx.map(function(value)
+			return value and 1 or 0
+		end),
+	})
 end
 
 --[=[
@@ -313,7 +317,7 @@ end
 
 	@return boolean
 ]=]
-function ButtonHighlightModel:IsHighlighted()
+function ButtonHighlightModel:IsHighlighted(): boolean
 	return self._isHighlighted.Value
 end
 
@@ -331,12 +335,11 @@ end
 	@return Observable<number>
 ]=]
 function ButtonHighlightModel:ObservePercentHighlightedTarget()
-	return self._isHighlighted:Observe()
-		:Pipe({
-			Rx.map(function(value)
-				return value and 1 or 0
-			end);
-		})
+	return self._isHighlighted:Observe():Pipe({
+		Rx.map(function(value)
+			return value and 1 or 0
+		end),
+	})
 end
 
 --[=[
@@ -354,7 +357,7 @@ end
 
 	@return boolean
 ]=]
-function ButtonHighlightModel:IsSelected()
+function ButtonHighlightModel:IsSelected(): boolean
 	return self._isSelected.Value
 end
 
@@ -373,7 +376,7 @@ end
 
 	@return Observable<boolean>
 ]=]
-function ButtonHighlightModel:IsMouseOrTouchOver()
+function ButtonHighlightModel:IsMouseOrTouchOver(): boolean
 	return self._isMouseOrTouchOver.Value
 end
 
@@ -392,7 +395,7 @@ end
 	@param isChoosen boolean
 	@param doNotAnimate boolean
 ]=]
-function ButtonHighlightModel:SetIsChoosen(isChoosen, doNotAnimate)
+function ButtonHighlightModel:SetIsChoosen(isChoosen: boolean, doNotAnimate)
 	assert(type(isChoosen) == "boolean", "Bad isChoosen")
 
 	self._isChoosen:SetValue(isChoosen, doNotAnimate)
@@ -403,7 +406,7 @@ end
 
 	@return boolean
 ]=]
-function ButtonHighlightModel:IsChoosen()
+function ButtonHighlightModel:IsChoosen(): boolean
 	return self._isChoosen.Value
 end
 
@@ -421,12 +424,11 @@ end
 	@return Observable<number>
 ]=]
 function ButtonHighlightModel:ObservePercentChoosenTarget()
-	return self._isChoosen:Observe()
-		:Pipe({
-			Rx.map(function(value)
-				return value and 1 or 0
-			end);
-		})
+	return self._isChoosen:Observe():Pipe({
+		Rx.map(function(value)
+			return value and 1 or 0
+		end),
+	})
 end
 
 --[=[
@@ -436,19 +438,21 @@ end
 	@return Observable<number>
 ]=]
 function ButtonHighlightModel:ObservePercentChoosen(acceleration)
-	return Blend.AccelTween(self._isChoosen:Observe()
-		:Pipe({
+	return Blend.AccelTween(
+		self._isChoosen:Observe():Pipe({
 			Rx.map(function(value)
 				return value and 1 or 0
-			end);
-		}), acceleration or 200)
+			end),
+		}),
+		acceleration or 200
+	)
 end
 
 --[=[
 	Sets whether interaction is enabled
 	@param interactionEnabled boolean
 ]=]
-function ButtonHighlightModel:SetInteractionEnabled(interactionEnabled)
+function ButtonHighlightModel:SetInteractionEnabled(interactionEnabled: boolean)
 	self._interactionEnabled:Mount(interactionEnabled)
 end
 
@@ -456,7 +460,7 @@ end
 	Gets if interaction enabled
 	@return boolean
 ]=]
-function ButtonHighlightModel:IsInteractionEnabled()
+function ButtonHighlightModel:IsInteractionEnabled(): boolean
 	return self._interactionEnabled.Value
 end
 
@@ -502,7 +506,7 @@ function ButtonHighlightModel:_trackTouch(inputObject)
 	self._maid[inputObject] = maid
 end
 
-function ButtonHighlightModel:_stopTouchTrack(inputObject)
+function ButtonHighlightModel:_stopTouchTrack(inputObject: InputObject)
 	-- Clears the input tracking as we slide off the button
 	self._maid[inputObject] = nil
 end

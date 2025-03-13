@@ -18,7 +18,7 @@ local GroupUtils = {}
 	@param groupId number
 	@return Promise<number> -- Generally from 0 to 255
 ]=]
-function GroupUtils.promiseRankInGroup(player, groupId)
+function GroupUtils.promiseRankInGroup(player: Player, groupId: number)
 	assert(typeof(player) == "Instance" and player:IsA("Player"), "Bad player")
 	assert(type(groupId) == "number", "Bad groupId")
 
@@ -47,7 +47,7 @@ end
 	@param groupId number
 	@return Promise<string>
 ]=]
-function GroupUtils.promiseRoleInGroup(player, groupId)
+function GroupUtils.promiseRoleInGroup(player: Player, groupId: number)
 	assert(typeof(player) == "Instance" and player:IsA("Player"), "Bad player")
 	assert(type(groupId) == "number", "Bad groupId")
 
@@ -75,7 +75,7 @@ end
 	@param groupId number
 	@return Promise<table>
 ]=]
-function GroupUtils.promiseGroupInfo(groupId)
+function GroupUtils.promiseGroupInfo(groupId: number)
 	assert(groupId, "Bad groupId")
 
 	return Promise.spawn(function(resolve, reject)
@@ -103,7 +103,7 @@ end
 	@param rankId number
 	@return Promise<table>
 ]=]
-function GroupUtils.promiseGroupRoleInfo(groupId, rankId)
+function GroupUtils.promiseGroupRoleInfo(groupId: number, rankId: number)
 	assert(groupId, "Bad groupId")
 	assert(rankId, "Bad rankId")
 

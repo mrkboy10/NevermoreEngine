@@ -233,7 +233,7 @@ end
 	@param event Signal<T>
 	@return Observable<T>
 ]=]
-function Rx.fromSignal(event)
+function Rx.fromSignal(event: RBXScriptSignal)
 	return Observable.new(function(sub)
 		-- This stream never completes or fails!
 		return event:Connect(function(...)

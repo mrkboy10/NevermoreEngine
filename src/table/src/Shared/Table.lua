@@ -6,14 +6,17 @@
 
 local Table = {}
 
+export type Array<Value> = { [number]: Value }
+export type Map<Key, Value> = { [Key]: Value }
+
 --[=[
-	Concats `target` with `source`.
+	Concats `target` with `source` in-place, modifying the target
 
 	@param target table -- Table to append to
 	@param source table -- Table read from
 	@return table -- parameter table
 ]=]
-function Table.append(target, source)
+function Table.append<T>(target: Array<T>, source: Array<T>): Array<T>
 	for _, value in source do
 		target[#target + 1] = value
 	end
@@ -42,7 +45,7 @@ end
 	@param orig table -- Original table
 	@return table
 ]=]
-function Table.reverse(orig)
+function Table.reverse<T>(orig: Array<T>): Array<T>
 	local new = {}
 	for i = #orig, 1, -1 do
 		table.insert(new, orig[i])
@@ -56,7 +59,7 @@ end
 	@param source table -- Table source to extract values from
 	@return table -- A list with all the values the table has
 ]=]
-function Table.values(source)
+function Table.values<T>(source: Map<any, T>): Array<T>
 	local new = {}
 	for _, val in source do
 		table.insert(new, val)
@@ -70,7 +73,7 @@ end
 	@param source table -- Table source to extract keys from
 	@return table -- A list with all the keys the table has
 ]=]
-function Table.keys(source)
+function Table.keys<T>(source: Map<T, any>): Array<T>
 	local new = {}
 	for key, _ in source do
 		table.insert(new, key)
@@ -85,7 +88,7 @@ end
 	@param new table -- Result
 	@return table
 ]=]
-function Table.mergeLists(orig, new)
+function Table.mergeLists<T, U>(orig: Array<T>, new: Array<U>): Array<T | U>
 	local _table = {}
 	for _, val in orig do
 		table.insert(_table, val)
@@ -116,7 +119,7 @@ end
 	@param _table table -- Table to convert to a list
 	@return table
 ]=]
-function Table.toList(_table)
+function Table.toList<T>(_table: { [any]: T }): { T }
 	local list = {}
 	for _, item in _table do
 		table.insert(list, item)
@@ -131,7 +134,7 @@ end
 	@param _table table -- Table to count
 	@return number -- count
 ]=]
-function Table.count(_table)
+function Table.count(_table): number
 	local count = 0
 	for _, _ in _table do
 		count = count + 1
@@ -156,7 +159,7 @@ Table.copy = table.clone
 	@param _context table? -- Context to deepCopy the value in
 	@return table -- Result
 ]=]
-function Table.deepCopy(target, _context)
+function Table.deepCopy(target: any, _context: any?)
 	_context = _context or {}
 	if _context[target] then
 		return _context[target]
@@ -198,7 +201,7 @@ end
 	@return The index of the value, if found
 	@return nil -- if not found
 ]=]
-function Table.getIndex(haystack, needle)
+function Table.getIndex<T>(haystack: { T }, needle: T): number?
 	assert(needle ~= nil, "Needle cannot be nil")
 
 	for index, item in haystack do
@@ -206,6 +209,7 @@ function Table.getIndex(haystack, needle)
 			return index
 		end
 	end
+
 	return nil
 end
 
@@ -217,19 +221,19 @@ end
 	@param output string? -- Output string, used recursively
 	@return string -- The table in string form
 ]=]
-function Table.stringify(_table, indent, output)
-	output = output or tostring(_table)
+function Table.stringify<Key, Value>(_table: Map<Key, Value>, indent: number?, output: string?): string
+	local result = output or tostring(_table)
 	indent = indent or 0
 	for key, value in _table do
 		local formattedText = "\n" .. string.rep("  ", indent) .. tostring(key) .. ": "
 		if type(value) == "table" then
-			output = output .. formattedText
-			output = Table.stringify(value, indent + 1, output)
+			result = result .. formattedText
+			result = Table.stringify(value, indent + 1, result)
 		else
-			output = output .. formattedText .. tostring(value)
+			result = result .. formattedText .. tostring(value)
 		end
 	end
-	return output
+	return result
 end
 
 --[=[
@@ -239,7 +243,7 @@ end
 	@param value any -- Value to search for
 	@return boolean -- `true` if within, `false` otherwise
 ]=]
-function Table.contains(_table, value)
+function Table.contains<T>(_table: { T }, value: T): boolean
 	for _, item in _table do
 		if item == value then
 			return true
@@ -336,7 +340,7 @@ local READ_ONLY_METATABLE = {
 	@param target table -- Table to error on indexing
 	@return table -- The same table, with the metatable set to readonly
 ]=]
-function Table.readonly(target)
+function Table.readonly<T>(target: T): T
 	return table.freeze(setmetatable(target, READ_ONLY_METATABLE))
 end
 

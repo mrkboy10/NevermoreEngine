@@ -185,7 +185,7 @@ function NumberSequenceUtils.stripe(
 	timeOffset = timeOffset % timeWidth
 
 	-- Generate initialial points
-	local waypoints = {}
+	local waypoints: { NumberSequenceKeypoint } = {}
 	for i = 0, stripes - 1 do
 		local timestampStart = (i / stripes + timeOffset) % 1
 		local timeStampMiddle = (timestampStart + timeWidth * (1 - percentStripeThickness)) % 1
@@ -198,7 +198,7 @@ function NumberSequenceUtils.stripe(
 		return a.Time < b.Time
 	end)
 
-	local fullWaypoints = {}
+	local fullWaypoints: { NumberSequenceKeypoint } = {}
 
 	-- Handle first!
 	table.insert(fullWaypoints, waypoints[1])
@@ -217,7 +217,7 @@ function NumberSequenceUtils.stripe(
 	-- Add beginning
 	local first = fullWaypoints[1]
 	if first.Time >= EPSILON then
-		local transparency
+		local transparency: number
 		if first.Value == backgroundTransparency then
 			transparency = stripeTransparency
 		elseif first.Value == stripeTransparency then

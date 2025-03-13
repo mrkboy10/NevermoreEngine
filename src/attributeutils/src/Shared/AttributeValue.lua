@@ -34,7 +34,7 @@ AttributeValue.__index = AttributeValue
 	@param defaultValue T?
 	@return AttributeValue<T>
 ]=]
-function AttributeValue.new(object, attributeName, defaultValue)
+function AttributeValue.new(object: Instance, attributeName: string, defaultValue)
 	assert(typeof(object) == "Instance", "Bad object")
 	assert(type(attributeName) == "string", "Bad attributeName")
 

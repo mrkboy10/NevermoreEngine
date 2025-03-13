@@ -20,17 +20,26 @@ local EMPTY_FUNCTION = function() end
 local ValueObject = {}
 ValueObject.ClassName = "ValueObject"
 
+export type TypeChecker = (value: any) -> (boolean, string?)
+
+export type ValueObject<T> = typeof(setmetatable(
+	{} :: {
+		Value: T,
+	},
+	ValueObject
+))
+
 --[=[
 	Constructs a new value object
 	@param baseValue T
-	@param checkType string | nil | (value: T) -> (boolean, string)
+	@param checkType string | nil | (value: T) -> (boolean, string?)
 	@return ValueObject
 ]=]
-function ValueObject.new(baseValue, checkType)
+function ValueObject.new<T>(baseValue: T?, checkType: (string | TypeChecker)?): ValueObject<T>
 	local self = setmetatable({
-		_value = baseValue;
-		_default = baseValue;
-		_checkType = checkType;
+		_value = baseValue,
+		_default = baseValue,
+		_checkType = checkType,
 	}, ValueObject)
 
 	if type(checkType) == "string" then
@@ -41,7 +50,7 @@ function ValueObject.new(baseValue, checkType)
 		assert(checkType(baseValue))
 	end
 
-	return self
+	return self :: ValueObject<T>
 end
 
 --[=[

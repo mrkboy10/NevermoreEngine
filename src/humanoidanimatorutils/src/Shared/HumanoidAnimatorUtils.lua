@@ -17,22 +17,28 @@ local HumanoidAnimatorUtils = {}
 	does not already have an animator. Doing so may break replication. I'm not sure.
 	:::
 
-	@param humanoid Humanoid
+	@param humanoid Humanoid | AnimationController
 	@return Animator
 ]=]
-function HumanoidAnimatorUtils.getOrCreateAnimator(humanoid)
+function HumanoidAnimatorUtils.getOrCreateAnimator(humanoid: Humanoid | AnimationController): Animator
 	local animator = humanoid:FindFirstChildOfClass("Animator")
-	if not animator then
-		if RunService:IsClient() then
-			warn(string.format("[HumanoidAnimatorUtils.getOrCreateAnimator] - Creating an animator on %s on the client", humanoid:GetFullName()))
-		end
-
-		animator = Instance.new("Animator")
-		animator.Name = "Animator"
-		animator.Parent = humanoid
+	if animator ~= nil then
+		return animator
 	end
 
-	return animator
+	if RunService:IsClient() then
+		warn(
+			string.format(
+				"[HumanoidAnimatorUtils.getOrCreateAnimator] - Creating an animator on %s on the client",
+				humanoid:GetFullName()
+			)
+		)
+	end
+
+	local newAnimator = Instance.new("Animator")
+	newAnimator.Name = "Animator"
+	newAnimator.Parent = humanoid
+	return newAnimator
 end
 
 --[=[
@@ -40,7 +46,7 @@ end
 
 	@param target Instance
 ]=]
-function HumanoidAnimatorUtils.findAnimator(target)
+function HumanoidAnimatorUtils.findAnimator(target: Instance): Animator?
 	return target:FindFirstChildOfClass("Animator")
 end
 
@@ -50,7 +56,7 @@ end
 	@param humanoid Humanoid
 	@param fadeTime number? -- Optional fade time to stop animations. Defaults to 0.1.
 ]=]
-function HumanoidAnimatorUtils.stopAnimations(humanoid, fadeTime)
+function HumanoidAnimatorUtils.stopAnimations(humanoid: Humanoid, fadeTime: number)
 	for _, track in pairs(humanoid:GetPlayingAnimationTracks()) do
 		track:Stop(fadeTime)
 	end
@@ -63,7 +69,7 @@ end
 	@param track AnimationTrack
 	@return boolean
 ]=]
-function HumanoidAnimatorUtils.isPlayingAnimationTrack(humanoid, track)
+function HumanoidAnimatorUtils.isPlayingAnimationTrack(humanoid: Humanoid, track: AnimationTrack): boolean
 	for _, playingTrack in pairs(humanoid:GetPlayingAnimationTracks()) do
 		if playingTrack == track then
 			return true

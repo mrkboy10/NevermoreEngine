@@ -20,8 +20,8 @@ local ProximityPromptInputUtils = {}
 	@param prompt ProximityPrompt
 	@return InputKeyMapList
 ]=]
-function ProximityPromptInputUtils.newInputKeyMapFromPrompt(prompt)
-	assert(typeof(prompt) == "Instance", "Bad prompt")
+function ProximityPromptInputUtils.newInputKeyMapFromPrompt(prompt: ProximityPrompt)
+	assert(typeof(prompt) == "Instance" and prompt:IsA("ProximityPrompt"), "Bad prompt")
 
 	return InputKeyMapList.new("custom", {
 		InputKeyMap.new(InputModeTypes.Gamepads, { prompt.GamepadKeyCode });

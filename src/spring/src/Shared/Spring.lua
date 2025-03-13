@@ -1,3 +1,4 @@
+--!nonstrict
 --[=[
 	A physical model of a spring, useful in many applications.
 
@@ -28,6 +29,14 @@
 ]=]
 local Spring = {}
 
+export type Spring<T> = {
+	Position: T,
+	Velocity: T,
+	Target: T,
+	Damper: number,
+	Speed: number,
+}
+
 --[=[
 	Constructs a new Spring at the position and target specified, of type T.
 
@@ -50,13 +59,13 @@ function Spring.new(initial, clock)
 	local target = initial or 0
 	clock = clock or os.clock
 	return setmetatable({
-		_clock = clock;
-		_time0 = clock();
-		_position0 = target;
-		_velocity0 = 0*target;
-		_target = target;
-		_damper = 1;
-		_speed = 1;
+		_clock = clock,
+		_time0 = clock(),
+		_position0 = target,
+		_velocity0 = 0 * target,
+		_target = target,
+		_damper = 1,
+		_speed = 1,
 	}, Spring)
 end
 
@@ -76,9 +85,9 @@ end
 	@param delta number -- Time to skip forwards
 	@return ()
 ]=]
-function Spring:TimeSkip(delta)
+function Spring:TimeSkip(delta: string)
 	local now = self._clock()
-	local position, velocity = self:_positionVelocity(now+delta)
+	local position, velocity = self:_positionVelocity(now + delta)
 	self._position0 = position
 	self._velocity0 = velocity
 	self._time0 = now
@@ -94,7 +103,7 @@ function Spring:SetTarget(value, doNotAnimate)
 	if doNotAnimate then
 		local now = self._clock()
 		self._position0 = value
-		self._velocity0 = 0*value
+		self._velocity0 = 0 * value
 		self._target = value
 		self._time0 = now
 	else
@@ -247,14 +256,14 @@ function Spring:__newindex(index, value)
 	end
 end
 
-function Spring:_positionVelocity(now)
+function Spring:_positionVelocity(now: number)
 	local p0 = self._position0
 	local v0 = self._velocity0
 	local p1 = self._target
-	local d = self._damper
-	local s = self._speed
+	local d: number = self._damper
+	local s: number = self._speed
 
-	local t = s*(now - self._time0)
+	local t: number = s * (now - self._time0)
 	local d2 = d*d
 
 	local h, si, co

@@ -15,10 +15,10 @@ local AnimationPromiseUtils = {}
 	Promises that the track is finished
 
 	@param animationTrack AnimationTrack
-	@param endMarkerName string | nil
+	@param endMarkerName string?
 	@return Promise
 ]=]
-function AnimationPromiseUtils.promiseFinished(animationTrack, endMarkerName)
+function AnimationPromiseUtils.promiseFinished(animationTrack: AnimationTrack, endMarkerName: string?)
 	assert(typeof(animationTrack) == "Instance", "Bad animationTrack")
 	assert(type(endMarkerName) == "string" or endMarkerName == nil, "Bad endMarkerName")
 	local promise = Promise.new()
@@ -52,7 +52,7 @@ end
 	@param animationTrack AnimationTrack
 	@return Promise
 ]=]
-function AnimationPromiseUtils.promiseLoaded(animationTrack)
+function AnimationPromiseUtils.promiseLoaded(animationTrack: AnimationTrack)
 	assert(typeof(animationTrack) == "Instance", "Bad animationTrack")
 
 	if animationTrack.Length > 0 then
@@ -97,7 +97,7 @@ end
 	@param keyframeName string
 	@return Promise
 ]=]
-function AnimationPromiseUtils.promiseKeyframeReached(animationTrack, keyframeName)
+function AnimationPromiseUtils.promiseKeyframeReached(animationTrack: AnimationTrack, keyframeName: string)
 	assert(typeof(animationTrack) == "Instance", "Bad animationTrack")
 	assert(type(keyframeName) == "string", "Bad endMarkerName")
 

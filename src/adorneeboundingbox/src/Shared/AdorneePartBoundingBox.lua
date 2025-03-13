@@ -14,7 +14,7 @@ local AdorneePartBoundingBox = setmetatable({}, BaseObject)
 AdorneePartBoundingBox.ClassName = "AdorneePartBoundingBox"
 AdorneePartBoundingBox.__index = AdorneePartBoundingBox
 
-function AdorneePartBoundingBox.new(part)
+function AdorneePartBoundingBox.new(part: BasePart)
 	assert(typeof(part) == "Instance" and part:IsA("BasePart"), "Bad part")
 
 	local self = setmetatable(BaseObject.new(part), AdorneePartBoundingBox)

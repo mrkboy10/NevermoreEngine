@@ -1,3 +1,4 @@
+--!strict
 --[=[
 	Helds encode Roblox enums into a string
 
@@ -17,7 +18,7 @@ local EnumUtils = {}
 	@param enumItem EnumItem
 	@return EnumItem
 ]=]
-function EnumUtils.encodeAsString(enumItem)
+function EnumUtils.encodeAsString(enumItem: EnumItem): string
 	assert(typeof(enumItem) == "EnumItem", "Bad enumItem")
 
 	return string.format("Enum.%s.%s", tostring(enumItem.EnumType), enumItem.Name)
@@ -35,17 +36,28 @@ end
 	@return boolean -- True if is of type
 	@return string -- Error message if there is an error.
 ]=]
-function EnumUtils.isOfType(expectedEnumType, enumItem)
+function EnumUtils.isOfType(expectedEnumType: Enum, enumItem: EnumItem): (boolean, string?)
 	assert(typeof(expectedEnumType) == "Enum", "Bad enum")
 
 	if typeof(enumItem) ~= "EnumItem" then
-		return false, string.format("Bad enumItem. Expected enumItem to be %s, got %s '%s'", tostring(expectedEnumType), typeof(enumItem), tostring(enumItem))
+		return false,
+			string.format(
+				"Bad enumItem. Expected enumItem to be %s, got %s '%s'",
+				tostring(expectedEnumType),
+				typeof(enumItem),
+				tostring(enumItem)
+			)
 	end
 
 	if enumItem.EnumType == expectedEnumType then
-		return true
+		return true, nil
 	else
-		return false, string.format("Bad enumItem. Expected enumItem to be %s, got %s", tostring(expectedEnumType), EnumUtils.encodeAsString(enumItem))
+		return false,
+			string.format(
+				"Bad enumItem. Expected enumItem to be %s, got %s",
+				tostring(expectedEnumType),
+				EnumUtils.encodeAsString(enumItem)
+			)
 	end
 end
 
@@ -56,7 +68,7 @@ end
 	@param value any
 	@return EnumItem
 ]=]
-function EnumUtils.toEnum(enumType, value)
+function EnumUtils.toEnum(enumType: Enum, value: any): EnumItem?
 	assert(typeof(enumType) == "Enum", "Bad enum")
 
 	if typeof(value) == "EnumItem" then
@@ -66,9 +78,9 @@ function EnumUtils.toEnum(enumType, value)
 			return nil
 		end
 	elseif type(value) == "number" then
-		return enumType:FromValue(value)
+		return (enumType :: any):FromValue(value)
 	elseif type(value) == "string" then
-		local result = enumType:FromName(value)
+		local result = (enumType :: any):FromName(value)
 		if result then
 			return result
 		end
@@ -81,6 +93,8 @@ function EnumUtils.toEnum(enumType, value)
 			return nil
 		end
 	end
+
+	return nil
 end
 
 --[=[
@@ -89,7 +103,7 @@ end
 	@param value any? -- String to decode
 	@return boolean
 ]=]
-function EnumUtils.isEncodedEnum(value)
+function EnumUtils.isEncodedEnum(value: any): boolean
 	return EnumUtils.decodeFromString(value) ~= nil
 end
 
@@ -99,7 +113,7 @@ end
 	@param value string? -- String to decode
 	@return EnumItem
 ]=]
-function EnumUtils.decodeFromString(value)
+function EnumUtils.decodeFromString(value: string?): EnumItem?
 	if type(value) ~= "string" then
 		return nil
 	end

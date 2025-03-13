@@ -1,3 +1,4 @@
+--!strict
 --[=[
 	Utility functions involving the root part
 	@class RootPartUtils

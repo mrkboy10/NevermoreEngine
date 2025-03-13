@@ -18,7 +18,7 @@ local AdorneeBoundingBox = setmetatable({}, BaseObject)
 AdorneeBoundingBox.ClassName = "AdorneeBoundingBox"
 AdorneeBoundingBox.__index = AdorneeBoundingBox
 
-function AdorneeBoundingBox.new(initialAdornee)
+function AdorneeBoundingBox.new(initialAdornee: Instance)
 	local self = setmetatable(BaseObject.new(), AdorneeBoundingBox)
 
 	self._adornee = self._maid:Add(ValueObject.new(initialAdornee))
@@ -41,7 +41,7 @@ function AdorneeBoundingBox.new(initialAdornee)
 	return self
 end
 
-function AdorneeBoundingBox:SetAdornee(adornee)
+function AdorneeBoundingBox:SetAdornee(adornee: Instance?)
 	assert(typeof(adornee) == "Instance" or adornee == nil, "Bad adornee")
 
 	self._adornee.Value = adornee
@@ -90,7 +90,7 @@ end
 	Gets the CFrame of the adornee
 	@return Vector3
 ]=]
-function AdorneeBoundingBox:GetCFrame()
+function AdorneeBoundingBox:GetCFrame(): CFrame?
 	return self._bbCFrame.Value
 end
 
@@ -106,7 +106,7 @@ end
 	Gets the size of the adornee
 	@return Vector3
 ]=]
-function AdorneeBoundingBox:GetSize()
+function AdorneeBoundingBox:GetSize(): Vector3
 	return self._bbSize.Value
 end
 
@@ -153,7 +153,7 @@ function AdorneeBoundingBox:_setupTool(tool)
 	return topMaid
 end
 
-function AdorneeBoundingBox:_setupModel(model)
+function AdorneeBoundingBox:_setupModel(model: Model)
 	assert(typeof(model) == "Instance" and model:IsA("Model"), "Bad model")
 
 	local topMaid = Maid.new()
@@ -190,7 +190,7 @@ function AdorneeBoundingBox:_setupHumanoid(humanoid: Humanoid)
 	return topMaid
 end
 
-function AdorneeBoundingBox:_setupAttachment(attachment)
+function AdorneeBoundingBox:_setupAttachment(attachment: Attachment)
 	assert(typeof(attachment) == "Instance" and attachment:IsA("Attachment"), "Bad attachment")
 
 	local maid = Maid.new()
@@ -224,7 +224,7 @@ function AdorneeBoundingBox:_setupAttachment(attachment)
 	return maid
 end
 
-function AdorneeBoundingBox:_setupPart(part)
+function AdorneeBoundingBox:_setupPart(part: BasePart)
 	assert(typeof(part) == "Instance" and part:IsA("BasePart"), "Bad part")
 
 	local maid = Maid.new()

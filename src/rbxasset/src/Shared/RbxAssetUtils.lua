@@ -2,16 +2,16 @@
 	@class RbxAssetUtils
 ]=]
 
-local require = require(script.Parent.loader).load(script)
-
 local RbxAssetUtils = {}
+
+export type RbxAssetIdConvertable = string | number
 
 --[=[
 	Converts a string or number to a string for playback.
 	@param id string? | number
 	@return string?
 ]=]
-function RbxAssetUtils.toRbxAssetId(id: string? | number): string
+function RbxAssetUtils.toRbxAssetId(id: RbxAssetIdConvertable): string
 	if type(id) == "number" then
 		return string.format("rbxassetid://%d", id)
 	else

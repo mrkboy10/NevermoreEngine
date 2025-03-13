@@ -39,7 +39,7 @@ end
 
 	@param seed number
 ]=]
-function SecretsService:SetPublicKeySeed(seed)
+function SecretsService:SetPublicKeySeed(seed: number)
 	assert(type(seed) == "number", "Bad seed")
 
 	local private, public = EllipticCurveCryptography.keypair(seed or EllipticCurveCryptography.random.random())

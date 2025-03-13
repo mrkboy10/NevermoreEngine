@@ -1,3 +1,4 @@
+--!strict
 --[=[
     Pseudo localizes text. Useful for verifying translation without having
     actual translations available
@@ -14,7 +15,7 @@ local DEFAULT_PSEUDO_LOCALE_ID = "qlp-pls"
     @param line string -- The line to translate
     @return string -- The translated line
 ]=]
-function PseudoLocalize.pseudoLocalize(line)
+function PseudoLocalize.pseudoLocalize(line: string): string
 	local charMap = PseudoLocalize.PSEUDO_CHARACTER_MAP
 	local out = ""
 	local isParam = false
@@ -41,8 +42,8 @@ end
     Gets the default pseudo locale string.
     @return string
 ]=]
-function PseudoLocalize.getDefaultPseudoLocaleId()
-    return DEFAULT_PSEUDO_LOCALE_ID
+function PseudoLocalize.getDefaultPseudoLocaleId(): string
+	return DEFAULT_PSEUDO_LOCALE_ID
 end
 
 --[=[
@@ -53,7 +54,7 @@ end
     @param preferredFromLocale string? -- Preferred from locale. Defaults to "en-us"
     @return string -- The translated line
 ]=]
-function PseudoLocalize.addToLocalizationTable(localizationTable, preferredLocaleId, preferredFromLocale)
+function PseudoLocalize.addToLocalizationTable(localizationTable: LocalizationTable, preferredLocaleId: string?, preferredFromLocale: string?)
 	local localeId = preferredLocaleId or DEFAULT_PSEUDO_LOCALE_ID
 	local fromLocale = preferredFromLocale or "en"
 

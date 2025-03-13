@@ -17,6 +17,7 @@ local LocalizedTextUtils = {}
 	@type TranslationArgs { [string]: LocalizedTextData | number | string }
 	@within LocalizedTextUtils
 ]=]
+export type TranslationArgs = { [string]: LocalizedTextData | number | string }
 
 --[=[
 	Valid localized text data
@@ -25,6 +26,10 @@ local LocalizedTextUtils = {}
 	.translationArgs TranslationArgs
 	@within LocalizedTextUtils
 ]=]
+export type LocalizedTextData = {
+	translationKey: string,
+	translationArgs: TranslationArgs,
+}
 
 --[=[
 	Creates a new localizedtextdata
@@ -32,13 +37,13 @@ local LocalizedTextUtils = {}
 	@param translationArgs TranslationArgs
 	@return LocalizedTextData
 ]=]
-function LocalizedTextUtils.create(translationKey, translationArgs)
+function LocalizedTextUtils.create(translationKey: string, translationArgs: TranslationArgs): LocalizedTextData
 	assert(type(translationKey) == "string", "Bad translationKey")
 	assert(type(translationArgs) == "table" or translationArgs == nil, "Bad translationArgs")
 
 	return {
-		translationKey = translationKey;
-		translationArgs = translationArgs;
+		translationKey = translationKey,
+		translationArgs = translationArgs,
 	}
 end
 
@@ -47,11 +52,10 @@ end
 	@param data any
 	@return boolean
 ]=]
-function LocalizedTextUtils.isLocalizedText(data)
+function LocalizedTextUtils.isLocalizedText(data: any): boolean
 	return type(data) == "table"
 		and type(data.translationKey) == "string"
-		and (type(data.translationArgs) == "table"
-			or data.translationArgs == nil)
+		and (type(data.translationArgs) == "table" or data.translationArgs == nil)
 end
 
 --[=[
@@ -62,7 +66,12 @@ end
 	@param extraArgs table?
 	@return string
 ]=]
-function LocalizedTextUtils.formatByKeyRecursive(translator, translationKey, translationArgs, extraArgs)
+function LocalizedTextUtils.formatByKeyRecursive(
+	translator: Translator,
+	translationKey: string,
+	translationArgs: TranslationArgs,
+	extraArgs
+)
 	assert(translator, "Bad translator")
 	assert(type(translationKey) == "string", "Bad translationKey")
 	assert(type(translationArgs) == "table" or translationArgs == nil, "Bad translationArgs")
@@ -74,8 +83,12 @@ function LocalizedTextUtils.formatByKeyRecursive(translator, translationKey, tra
 				assert(value.translationKey, "Table, but no translationKey")
 
 				if value.translationArgs then
-					formattedArgs[name] = LocalizedTextUtils
-						.formatByKeyRecursive(translator, value.translationKey, value.translationArgs, extraArgs)
+					formattedArgs[name] = LocalizedTextUtils.formatByKeyRecursive(
+						translator,
+						value.translationKey,
+						value.translationArgs,
+						extraArgs
+					)
 				else
 					formattedArgs[name] = translator:FormatByKey(value.translationKey)
 				end
@@ -103,7 +116,12 @@ end
 	@param extraArgs table?
 	@return Observable<string>
 ]=]
-function LocalizedTextUtils.observeFormatByKeyRecursive(translator, translationKey, translationArgs, extraArgs)
+function LocalizedTextUtils.observeFormatByKeyRecursive(
+	translator,
+	translationKey: string,
+	translationArgs: TranslationArgs,
+	extraArgs
+)
 	assert(translator, "Bad translator")
 	assert(type(translationKey) == "string", "Bad translationKey")
 	assert(type(translationArgs) == "table" or translationArgs == nil, "Bad translationArgs")
@@ -115,8 +133,12 @@ function LocalizedTextUtils.observeFormatByKeyRecursive(translator, translationK
 				assert(value.translationKey, "Table, but no translationKey")
 
 				if value.translationArgs then
-					observableFormattedArgs[name] = LocalizedTextUtils
-						.observeFormatByKeyRecursive(translator, value.translationKey, value.translationArgs, extraArgs)
+					observableFormattedArgs[name] = LocalizedTextUtils.observeFormatByKeyRecursive(
+						translator,
+						value.translationKey,
+						value.translationArgs,
+						extraArgs
+					)
 				else
 					observableFormattedArgs[name] = translator:ObserveFormatByKey(value.translationKey)
 				end
@@ -143,7 +165,7 @@ end
 	@param extraArgs table?
 	@return Observable<string>
 ]=]
-function LocalizedTextUtils.observeLocalizedTextToString(translator, localizedText, extraArgs)
+function LocalizedTextUtils.observeLocalizedTextToString(translator, localizedText: LocalizedTextData, extraArgs)
 	assert(translator, "Bad translator")
 	assert(LocalizedTextUtils.isLocalizedText(localizedText), "No localizedText")
 
@@ -151,7 +173,8 @@ function LocalizedTextUtils.observeLocalizedTextToString(translator, localizedTe
 		translator,
 		localizedText.translationKey,
 		localizedText.translationArgs,
-		extraArgs)
+		extraArgs
+	)
 end
 
 --[=[
@@ -166,7 +189,7 @@ end
 	@param extraArgs table?
 	@return string
 ]=]
-function LocalizedTextUtils.localizedTextToString(translator, localizedText, extraArgs)
+function LocalizedTextUtils.localizedTextToString(translator, localizedText: LocalizedTextData, extraArgs)
 	assert(translator, "Bad translator")
 	assert(LocalizedTextUtils.isLocalizedText(localizedText), "No localizedText")
 
@@ -174,7 +197,8 @@ function LocalizedTextUtils.localizedTextToString(translator, localizedText, ext
 		translator,
 		localizedText.translationKey,
 		localizedText.translationArgs,
-		extraArgs)
+		extraArgs
+	)
 end
 
 --[=[
@@ -182,7 +206,7 @@ end
 	@param text string
 	@return LocalizedTextData?
 ]=]
-function LocalizedTextUtils.fromJSON(text)
+function LocalizedTextUtils.fromJSON(text: string): LocalizedTextData?
 	assert(type(text) == "string", "Bad text")
 
 	local decoded
@@ -201,7 +225,7 @@ end
 	@param localizedText LocalizedTextData
 	@return string?
 ]=]
-function LocalizedTextUtils.toJSON(localizedText)
+function LocalizedTextUtils.toJSON(localizedText: LocalizedTextData): string
 	assert(LocalizedTextUtils.isLocalizedText(localizedText), "Bad localizedText")
 
 	local localized = HttpService:JSONEncode(localizedText)
@@ -214,9 +238,13 @@ end
 	@param attributeName string
 	@param translationKey string
 	@param translationArgs TranslationArgs
-	@return LocalizedTextData
 ]=]
-function LocalizedTextUtils.setFromAttribute(obj, attributeName, translationKey, translationArgs)
+function LocalizedTextUtils.setFromAttribute(
+	obj: Instance,
+	attributeName: string,
+	translationKey: string,
+	translationArgs: TranslationArgs
+)
 	assert(typeof(obj) == "Instance", "Bad obj")
 	assert(type(attributeName) == "string", "Bad attributeName")
 
@@ -230,7 +258,7 @@ end
 	@param attributeName string
 	@return LocalizedTextData
 ]=]
-function LocalizedTextUtils.getFromAttribute(obj, attributeName)
+function LocalizedTextUtils.getFromAttribute(obj: Instance, attributeName: string): LocalizedTextData?
 	assert(typeof(obj) == "Instance", "Bad obj")
 	assert(type(attributeName) == "string", "Bad attributeName")
 
@@ -250,7 +278,12 @@ end
 	@param extraArgs table?
 	@return string?
 ]=]
-function LocalizedTextUtils.getTranslationFromAttribute(translator, obj, attributeName, extraArgs)
+function LocalizedTextUtils.getTranslationFromAttribute(
+	translator,
+	obj: Instance,
+	attributeName: string,
+	extraArgs
+): string?
 	assert(translator, "Bad translator")
 	assert(typeof(obj) == "Instance", "Bad obj")
 	assert(type(attributeName) == "string", "Bad attributeName")
@@ -270,7 +303,12 @@ end
 	@param defaultTranslationKey string
 	@param defaultTranslationArgs table?
 ]=]
-function LocalizedTextUtils.initializeAttribute(obj, attributeName, defaultTranslationKey, defaultTranslationArgs)
+function LocalizedTextUtils.initializeAttribute(
+	obj,
+	attributeName: string,
+	defaultTranslationKey,
+	defaultTranslationArgs
+)
 	assert(typeof(obj) == "Instance", "Bad obj")
 	assert(type(attributeName) == "string", "Bad attributeName")
 	assert(type(defaultTranslationKey) == "string", "Bad defaultTranslationKey")
@@ -291,7 +329,7 @@ end
 	@param extraArgs table?
 	@return Observable<string?>
 ]=]
-function LocalizedTextUtils.observeTranslation(translator, obj, attributeName, extraArgs)
+function LocalizedTextUtils.observeTranslation(translator, obj: Instance, attributeName: string, extraArgs)
 	assert(translator, "Bad translator")
 	assert(typeof(obj) == "Instance", "Bad obj")
 	assert(type(attributeName) == "string", "Bad attributeName")

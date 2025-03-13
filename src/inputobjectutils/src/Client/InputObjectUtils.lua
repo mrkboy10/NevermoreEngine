@@ -25,7 +25,7 @@ local MOUSE_BUTTON_USER_INPUT_TYPES = {
 	@param userInputType UserInputType
 	@return boolean
 ]=]
-function InputObjectUtils.isMouseUserInputType(userInputType)
+function InputObjectUtils.isMouseUserInputType(userInputType: Enum.UserInputType): boolean
 	assert(typeof(userInputType) == "EnumItem", "Bad userInputType")
 
 	return MOUSE_USER_INPUT_TYPES[userInputType] or false
@@ -37,7 +37,7 @@ end
 	@param userInputType UserInputType
 	@return boolean
 ]=]
-function InputObjectUtils.isMouseButtonInputType(userInputType)
+function InputObjectUtils.isMouseButtonInputType(userInputType: Enum.UserInputType): boolean
 	assert(typeof(userInputType) == "EnumItem", "Bad userInputType")
 
 	return MOUSE_BUTTON_USER_INPUT_TYPES[userInputType] or false
@@ -51,7 +51,7 @@ end
 	@param otherInputObject InputObject
 	@return boolean
 ]=]
-function InputObjectUtils.isSameInputObject(inputObject, otherInputObject)
+function InputObjectUtils.isSameInputObject(inputObject: InputObject, otherInputObject: InputObject): boolean
 	assert(inputObject, "Bad inputObject")
 	assert(otherInputObject, "Bad otherInputObject")
 

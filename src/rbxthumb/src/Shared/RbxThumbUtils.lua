@@ -1,3 +1,4 @@
+--!strict
 --[=[
 	Wraps the rbxthumb URL api surface to generate a URL for a thumbnail on the cloud.
 
@@ -9,6 +10,17 @@
 local require = require(script.Parent.loader).load(script)
 
 local RbxThumbnailTypes = require("RbxThumbnailTypes")
+
+export type RbxThumbnailTypes =
+	"Asset"
+	| "Avatar"
+	| "AvatarHeadShot"
+	| "BadgeIcon"
+	| "BundleThumbnail"
+	| "GameIcon"
+	| "GamePass"
+	| "GroupIcon"
+	| "Outfit"
 
 local RbxThumbUtils = {}
 
@@ -35,7 +47,12 @@ local RbxThumbUtils = {}
 	@param height number
 	@return string
 ]=]
-function RbxThumbUtils.getThumbnailUrl(thumbnailType, targetId, width, height)
+function RbxThumbUtils.getThumbnailUrl(
+	thumbnailType: RbxThumbnailTypes,
+	targetId: number,
+	width: number,
+	height: number
+): string
 	assert(type(thumbnailType) == "string", "Bad thumbnailType")
 	assert(type(targetId) == "number", "Bad targetId")
 	assert(type(width) == "number", "Bad width")
@@ -49,7 +66,7 @@ end
 	@param avatarItemType AvatarItemType
 	@return string
 ]=]
-function RbxThumbUtils.avatarItemTypeToThumbnailType(avatarItemType)
+function RbxThumbUtils.avatarItemTypeToThumbnailType(avatarItemType: Enum.AvatarItemType): RbxThumbnailTypes
 	if avatarItemType == Enum.AvatarItemType.Asset then
 		return RbxThumbnailTypes.ASSET
 	elseif avatarItemType == Enum.AvatarItemType.Bundle then
@@ -69,7 +86,7 @@ end
 	@param height number?
 	@return string
 ]=]
-function RbxThumbUtils.getAssetThumbnailUrl(targetId, width, height)
+function RbxThumbUtils.getAssetThumbnailUrl(targetId: number, width: number, height: number): string
 	assert(type(targetId) == "number", "Bad targetId")
 
 	width = width or 150
@@ -88,7 +105,7 @@ end
 	@param height number?
 	@return string
 ]=]
-function RbxThumbUtils.getAvatarThumbnailUrl(targetId, width, height)
+function RbxThumbUtils.getAvatarThumbnailUrl(targetId: number, width: number?, height: number?): string
 	assert(type(targetId) == "number", "Bad targetId")
 
 	width = width or 150
@@ -107,7 +124,7 @@ end
 	@param height number?
 	@return string
 ]=]
-function RbxThumbUtils.getAvatarHeadShotThumbnailUrl(targetId, width, height)
+function RbxThumbUtils.getAvatarHeadShotThumbnailUrl(targetId: number, width: number?, height: number?): string
 	assert(type(targetId) == "number", "Bad targetId")
 
 	width = width or 150
@@ -126,7 +143,7 @@ end
 	@param height number?
 	@return string
 ]=]
-function RbxThumbUtils.getBadgeIconThumbnailUrl(targetId, width, height)
+function RbxThumbUtils.getBadgeIconThumbnailUrl(targetId: number, width: number?, height: number?): string
 	assert(type(targetId) == "number", "Bad targetId")
 
 	width = width or 150
@@ -145,7 +162,7 @@ end
 	@param height number?
 	@return string
 ]=]
-function RbxThumbUtils.getBundleThumbnailThumbnailUrl(targetId, width, height)
+function RbxThumbUtils.getBundleThumbnailThumbnailUrl(targetId: number, width: number?, height: number?): string
 	assert(type(targetId) == "number", "Bad targetId")
 
 	width = width or 150
@@ -164,7 +181,7 @@ end
 	@param height number?
 	@return string
 ]=]
-function RbxThumbUtils.getGameIconThumbnailUrl(targetId, width, height)
+function RbxThumbUtils.getGameIconThumbnailUrl(targetId: number, width: number?, height: number?): string
 	assert(type(targetId) == "number", "Bad targetId")
 
 	width = width or 150
@@ -183,7 +200,7 @@ end
 	@param height number?
 	@return string
 ]=]
-function RbxThumbUtils.getGamePassThumbnailUrl(targetId, width, height)
+function RbxThumbUtils.getGamePassThumbnailUrl(targetId: number, width: number?, height: number?): string
 	assert(type(targetId) == "number", "Bad targetId")
 
 	width = width or 150
@@ -202,7 +219,7 @@ end
 	@param height number?
 	@return string
 ]=]
-function RbxThumbUtils.getGroupIconThumbnailUrl(targetId, width, height)
+function RbxThumbUtils.getGroupIconThumbnailUrl(targetId: number, width: number?, height: number?): string
 	assert(type(targetId) == "number", "Bad targetId")
 
 	width = width or 150
@@ -221,7 +238,7 @@ end
 	@param height number?
 	@return string
 ]=]
-function RbxThumbUtils.getOutfitThumbnailUrl(targetId, width, height)
+function RbxThumbUtils.getOutfitThumbnailUrl(targetId: number, width: number?, height: number?): string
 	assert(type(targetId) == "number", "Bad targetId")
 
 	width = width or 150
